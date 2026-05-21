@@ -731,16 +731,67 @@ ANSWER {i+1}: {ans}
 
         st.session_state.final_result = result
 
-        save_to_excel(
-            name,
-            roll,
-            dept,
-            project_title,
-            result
-        )
+import re
+from datetime import datetime
 
-        st.success("Final Report Generated Successfully ✅")
+def save_to_excel(name, roll, dept, project_title, result):
 
+    file = "student_results.xlsx"
+
+    # =========================
+    # Extract Marks
+    # =========================
+
+    marks_match = re.search(r'Overall Marks:\s*(\d+\/100)', result)
+
+    if marks_match:
+        marks = marks_match.group(1)
+    else:
+        marks = "N/A"
+
+    # =========================
+    # Extract PASS/FAIL
+    # =========================
+
+    if "PASS" in result.upper():
+        final_status = "PASS"
+
+    elif "FAIL" in result.upper():
+        final_status = "FAIL"
+
+    else:
+        final_status = "UNKNOWN"
+
+    # =========================
+    # Create Row
+    # =========================
+
+    df_new = pd.DataFrame([{
+        "Student Name": name,
+        "Roll Number": roll,
+        "Department": dept,
+        "Project Title": project_title,
+        "Marks": marks,
+        "Status": final_status,
+        "Full Evaluation": result,
+        "Timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    }])
+
+    # =========================
+    # Append Old Data
+    # =========================
+
+    if os.path.exists(file):
+
+        old = pd.read_excel(file, engine="openpyxl")
+
+        df_new = pd.concat([old, df_new], ignore_index=True)
+
+    # =========================
+    # Save Excel
+    # =========================
+
+    df_new.to_excel(file, index=False, engine="openpyxl")
 # =====================================================
 # PROFESSIONAL RESULT UI
 # =====================================================
