@@ -167,21 +167,24 @@ def transcribe_audio(audio_bytes):
 def generate_questions(project_text, section, difficulty, examiner_mode, system_mode):
 
     prompt = f"""
-You are a highly strict university viva examiner.
+You are a strict university viva examiner.
 
-Generate EXACTLY 6 viva questions ONLY from uploaded project.
+Generate EXACTLY 6 questions.
 
-RULES:
-- Questions must come directly from project
-- No generic questions
-- No theory outside project
-- Q1 easiest
-- Q6 hardest
+IMPORTANT RULES:
+- MUST strictly follow section: {section}
+- MUST match difficulty: {difficulty}
+- MUST match examiner style: {examiner_mode}
+- DO NOT ignore instructions
+- Questions MUST be relevant to selected section only
 
-Mode: {system_mode}
-Section: {section}
-Difficulty: {difficulty}
-Examiner: {examiner_mode}
+SECTION RULES:
+- Basic → simple conceptual understanding
+- Technical → code, architecture, implementation details
+- Logical → reasoning, problem solving
+- Overall → mixed evaluation
+- Presentation → communication & explanation skills
+- Defense → critical questioning
 
 PROJECT:
 {project_text[:12000]}
@@ -195,78 +198,50 @@ Q5: ...
 Q6: ...
 """
 
-    try:
+    res = requests.post(
+        CHAT_URL,
+        headers={
+            "Authorization": f"Bearer {GROQ_API_KEY}",
+            "Content-Type": "application/json"
+        },
+        json={
+            "model": "llama-3.1-8b-instant",
+            "messages": [{"role": "user", "content": prompt}],
+            "temperature": 0.2
+        }
+    )
 
-        res = requests.post(
-            CHAT_URL,
-            headers={
-                "Authorization": f"Bearer {GROQ_API_KEY}",
-                "Content-Type": "application/json"
-            },
-            json={
-                "model": "llama-3.1-8b-instant",
-                "messages": [
-                    {
-                        "role": "user",
-                        "content": prompt
-                    }
-                ],
-                "temperature": 0.3
-            }
-        )
+    data = res.json()
 
-        data = res.json()
-
-        if "choices" not in data:
-
-            return [
-                "Explain your project architecture.",
-                "Describe the main modules.",
-                "Which technologies are used?",
-                "How does your system work?",
-                "What challenges did you face?",
-                "What future improvements can be added?"
-            ]
-
-        raw = data["choices"][0]["message"]["content"]
-
-        questions = []
-
-        for line in raw.split("\n"):
-
-            line = line.strip()
-
-            if line.startswith("Q") and ":" in line:
-
-                q = line.split(":", 1)[1].strip()
-
-                if q:
-                    questions.append(q)
-
-        if len(questions) < 6:
-
-            return [
-                "Explain your project architecture.",
-                "Describe the main modules.",
-                "Which technologies are used?",
-                "How does your system work?",
-                "What challenges did you face?",
-                "What future improvements can be added?"
-            ]
-
-        return questions[:6]
-
-    except:
-
+    if "choices" not in data:
         return [
-            "Explain your project architecture.",
-            "Describe the main modules.",
-            "Which technologies are used?",
-            "How does your system work?",
+            f"Explain your {section} part of project.",
+            "Describe system architecture.",
+            "What technologies are used?",
+            "Explain workflow.",
             "What challenges did you face?",
-            "What future improvements can be added?"
+            "What improvements can be made?"
         ]
 
+    raw = data["choices"][0]["message"]["content"]
+
+    questions = []
+    for line in raw.split("\n"):
+        if line.startswith("Q") and ":" in line:
+            questions.append(line.split(":", 1)[1].strip())
+
+    if len(questions) < 6:
+        return [
+            f"Explain your {section} module.",
+            "Describe architecture.",
+            "Explain implementation.",
+            "What challenges did you face?",
+            "How does system work?",
+            "What improvements can be made?"
+        ]
+
+    return questions[:6]
+    
 # =====================================================
 # ANSWER EVALUATION
 # =====================================================
