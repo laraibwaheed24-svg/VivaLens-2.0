@@ -790,8 +790,89 @@ def save_to_excel(name, roll, dept, project_title, result):
     # =========================
     # Save Excel
     # =========================
+# =====================================================
+# SAVE EXCEL
+# =====================================================
 
-    df_new.to_excel(file, index=False, engine="openpyxl")
+import re
+from datetime import datetime
+
+def save_to_excel(name, roll, dept, project_title, result):
+
+    try:
+
+        file = "student_results.xlsx"
+
+        # =========================
+        # Extract Marks
+        # =========================
+
+        marks_match = re.search(
+            r'Overall Marks:\s*(\d+\/100)',
+            result
+        )
+
+        marks = marks_match.group(1) if marks_match else "N/A"
+
+        # =========================
+        # Extract Status
+        # =========================
+
+        if "PASS" in result.upper():
+            status = "PASS"
+
+        elif "FAIL" in result.upper():
+            status = "FAIL"
+
+        else:
+            status = "UNKNOWN"
+
+        # =========================
+        # Create DataFrame
+        # =========================
+
+        df_new = pd.DataFrame([{
+            "Student Name": name,
+            "Roll Number": roll,
+            "Department": dept,
+            "Project Title": project_title,
+            "Marks": marks,
+            "Status": status,
+            "Full Evaluation": result,
+            "Timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        }])
+
+        # =========================
+        # Append Existing File
+        # =========================
+
+        if os.path.exists(file):
+
+            old = pd.read_excel(
+                file,
+                engine="openpyxl"
+            )
+
+            df_new = pd.concat(
+                [old, df_new],
+                ignore_index=True
+            )
+
+        # =========================
+        # Save File
+        # =========================
+
+        df_new.to_excel(
+            file,
+            index=False,
+            engine="openpyxl"
+        )
+
+        st.success("✅ Result saved to database")
+
+    except Exception as e:
+
+        st.error(f"Database Save Error: {e}")
 # =====================================================
 # PROFESSIONAL RESULT UI
 # =====================================================
