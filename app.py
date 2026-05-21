@@ -787,92 +787,55 @@ def save_to_excel(name, roll, dept, project_title, result):
 
         df_new = pd.concat([old, df_new], ignore_index=True)
 
-    # =========================
-    # Save Excel
-    # =========================
 # =====================================================
 # SAVE EXCEL
 # =====================================================
 
-import re
 from datetime import datetime
+import os
+import pandas as pd
+import streamlit as st
 
 def save_to_excel(name, roll, dept, project_title, result):
 
     try:
+        # Always use app directory (Streamlit-safe)
+        file_path = os.path.join(os.getcwd(), "student_results.xlsx")
 
-        file = "student_results.xlsx"
-
-        # =========================
-        # Extract Marks
-        # =========================
-
-        marks_match = re.search(
-            r'Overall Marks:\s*(\d+\/100)',
-            result
-        )
-
+        # Extract marks
+        import re
+        marks_match = re.search(r'Overall Marks:\s*(\d+\/100)', result)
         marks = marks_match.group(1) if marks_match else "N/A"
 
-        # =========================
-        # Extract Status
-        # =========================
+        # PASS/FAIL
+        status = "PASS" if "PASS" in result.upper() else "FAIL" if "FAIL" in result.upper() else "UNKNOWN"
 
-        if "PASS" in result.upper():
-            status = "PASS"
-
-        elif "FAIL" in result.upper():
-            status = "FAIL"
-
-        else:
-            status = "UNKNOWN"
-
-        # =========================
-        # Create DataFrame
-        # =========================
-
-        df_new = pd.DataFrame([{
+        new_data = pd.DataFrame([{
             "Student Name": name,
             "Roll Number": roll,
             "Department": dept,
             "Project Title": project_title,
             "Marks": marks,
             "Status": status,
-            "Full Evaluation": result,
             "Timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         }])
 
-        # =========================
-        # Append Existing File
-        # =========================
+        # Append old file if exists
+        if os.path.exists(file_path):
+            old = pd.read_excel(file_path, engine="openpyxl")
+            new_data = pd.concat([old, new_data], ignore_index=True)
 
-        if os.path.exists(file):
+        # SAVE
+        new_data.to_excel(file_path, index=False, engine="openpyxl")
 
-            old = pd.read_excel(
-                file,
-                engine="openpyxl"
-            )
-
-            df_new = pd.concat(
-                [old, df_new],
-                ignore_index=True
-            )
-
-        # =========================
-        # Save File
-        # =========================
-
-        df_new.to_excel(
-            file,
-            index=False,
-            engine="openpyxl"
-        )
-
-        st.success("✅ Result saved to database")
+        # VERIFY FILE WAS CREATED
+        if os.path.exists(file_path):
+            st.success(f"✅ Saved successfully to database ({file_path})")
+        else:
+            st.error("❌ File not created")
 
     except Exception as e:
-
-        st.error(f"Database Save Error: {e}")
+        st.error(f"❌ Save failed: {str(e)}")
 # =====================================================
 # PROFESSIONAL RESULT UI
 # =====================================================
