@@ -818,3 +818,25 @@ if st.session_state.final_result:
         st.session_state.voice_answers = {}
 
         st.rerun()
+
+
+# =====================================================
+# VIEW SAVED RESULTS
+# =====================================================
+
+if st.session_state.mode == "University Final Exam":
+
+    st.markdown("---")
+    st.subheader("📊 Saved Student Results")
+
+    if os.path.exists("student_results.xlsx"):
+
+        df = pd.read_excel("student_results.xlsx")
+
+        st.dataframe(df, use_container_width=True)
+
+        st.success(f"{len(df)} student records found")
+
+    else:
+
+        st.info("No saved records yet.")
