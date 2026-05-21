@@ -894,12 +894,4 @@ if st.session_state.mode == "University Final Exam":
         st.info("No saved records yet.")
 
 
-# =====================================================
-# VIEW DB
-# =====================================================
 
-if st.session_state.mode == "University Final Exam":
-
-    if os.path.exists("student_results.xlsx"):
-        df = pd.read_excel("student_results.xlsx")
-        st.dataframe(df)
