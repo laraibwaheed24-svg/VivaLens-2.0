@@ -841,6 +841,24 @@ if st.session_state.final_result:
             mime="application/pdf"
         )
 
+        # =====================================================
+    # SAVE TO DATABASE BUTTON (ADDED ONLY)
+    # =====================================================
+
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    if st.button("💾 Save to Database"):
+
+        save_to_excel(
+            name,
+            roll,
+            dept,
+            project_title,
+            st.session_state.final_result
+        )
+
+        st.success("✅ Saved successfully to Excel database!")
+
     st.markdown("<br>", unsafe_allow_html=True)
 
     if st.button("🔄 Next Student"):
