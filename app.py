@@ -183,9 +183,6 @@ def transcribe_audio(audio_bytes):
         return f"Transcription Error: {str(e)}"
 
 
-# ===============================
-# Generate Questions
-# ===============================
 
 # =====================================================
 # QUESTION GENERATION
