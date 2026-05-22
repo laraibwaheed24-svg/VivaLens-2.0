@@ -132,43 +132,48 @@ def extract_text(file):
 # AUDIO TRANSCRIPTION
 # =====================================================
 
-def transcribe_audio(audio_bytes):
+# =====================================================
+# AUDIO TRANSCRIPTION
+# =====================================================
+
+def transcribe_audio(audio_file):
 
     try:
 
-        temp_path = "temp_audio.wav"
-
-        with open(temp_path, "wb") as f:
-            f.write(audio_bytes)
-
-        with open(temp_path, "rb") as audio_file:
-
-            response = requests.post(
-                TRANSCRIBE_URL,
-                headers={
-                    "Authorization": f"Bearer {GROQ_API_KEY}"
-                },
-                files={
-                    "file": ("audio.wav", audio_file, "audio/wav")
-                },
-                data={
-                    "model": "whisper-large-v3"
-                }
-            )
-
-        os.remove(temp_path)
+        response = requests.post(
+            TRANSCRIBE_URL,
+            headers={
+                "Authorization": f"Bearer {GROQ_API_KEY}"
+            },
+            files={
+                "file": (
+                    "audio.wav",
+                    audio_file,
+                    "audio/wav"
+                )
+            },
+            data={
+                "model": "whisper-large-v3"
+            }
+        )
 
         result = response.json()
 
         if "text" in result:
-            return result["text"]
 
-        return "No speech detected"
+            text = result["text"].strip()
+
+            if text == "":
+                return "No speech detected"
+
+            return text
+
+        return str(result)
 
     except Exception as e:
 
         return f"Transcription Error: {str(e)}"
-
+        
 # =====================================================
 # QUESTION GENERATION
 # =====================================================
@@ -768,9 +773,7 @@ if st.session_state.questions:
                     with st.spinner("Transcribing..."):
 
                         # READ AUDIO PROPERLY
-                        audio_bytes = audio.getvalue()
-
-                        text = transcribe_audio(audio_bytes)
+                        text = transcribe_audio(audio)
 
                         st.session_state.voice_answers[i] = text
 
