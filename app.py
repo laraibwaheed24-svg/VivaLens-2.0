@@ -136,30 +136,51 @@ def transcribe_audio(audio_bytes):
 
     try:
 
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as f:
+        # Save audio exactly as webm
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".webm") as f:
+
             f.write(audio_bytes)
-            path = f.name
 
-        with open(path, "rb") as af:
+            temp_path = f.name
 
-            res = requests.post(
+        # Send to Groq Whisper
+        with open(temp_path, "rb") as audio_file:
+
+            response = requests.post(
                 TRANSCRIBE_URL,
                 headers={
                     "Authorization": f"Bearer {GROQ_API_KEY}"
                 },
-                files={"file": af},
-                data={"model": "whisper-large-v3"}
+                files={
+                    "file": (
+                        "audio.webm",
+                        audio_file,
+                        "audio/webm"
+                    )
+                },
+                data={
+                    "model": "whisper-large-v3",
+                    "language": "en"
+                }
             )
 
+        # Remove temp file
         try:
-            os.remove(path)
+            os.remove(temp_path)
         except:
             pass
 
-        return res.json().get("text", "")
+        # Debugging
+        data = response.json()
 
-    except:
+        if "text" in data:
+            return data["text"]
+
         return ""
+
+    except Exception as e:
+
+        return f"Transcription Error: {str(e)}"
 
 
 # ===============================
