@@ -161,9 +161,11 @@ def transcribe_audio(audio_bytes):
     except:
         return ""
 
-# =====================================================
-# QUESTION GENERATION
-# =====================================================
+
+# ===============================
+# Generate Questions
+# ===============================
+
 def generate_questions(project_text, section, difficulty, examiner_mode, system_mode):
 
     prompt = f"""
