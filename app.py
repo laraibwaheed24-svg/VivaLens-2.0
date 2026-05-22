@@ -765,26 +765,29 @@ if st.session_state.questions:
         if answer_mode == "Voice":
 
             audio = st.audio_input(
-                "🎤 Speak Your Answer",
-                key=f"audio_{i}"
-            )
+    "🎤 Speak Your Answer",
+    key=f"audio_{i}"
+)
 
-            if audio is not None:
+if audio is not None:
 
-                if st.button(
-                    "🧠 Transcribe",
-                    key=f"transcribe_{i}"
-                ):
+    st.audio(audio)
 
-                    with st.spinner("Transcribing..."):
+    if st.button(
+        "🧠 Transcribe",
+        key=f"transcribe_{i}"
+    ):
 
-                        text = transcribe_audio(
-                            audio.getvalue()
-                        )
+        with st.spinner("Transcribing..."):
 
-                        st.session_state.voice_answers[i] = text
+            # READ AUDIO CORRECTLY
+            audio_bytes = audio.read()
 
-                    st.success("Transcription Complete ✅")
+            text = transcribe_audio(audio_bytes)
+
+            st.session_state.voice_answers[i] = text
+
+        st.success("Transcription Complete ✅")
 
             answer = st.session_state.voice_answers.get(i, "")
 
