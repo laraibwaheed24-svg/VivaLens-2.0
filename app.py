@@ -164,33 +164,100 @@ def transcribe_audio(audio_bytes):
 # =====================================================
 # QUESTION GENERATION
 # =====================================================
-
 def generate_questions(project_text, section, difficulty, examiner_mode, system_mode):
 
     prompt = f"""
-You are a strict university viva examiner.
+You are an elite university viva examiner AI.
 
-Generate EXACTLY 6 questions.
+Your task is to generate EXACTLY 6 highly intelligent viva questions.
 
-IMPORTANT RULES:
-- MUST strictly follow section: {section}
-- MUST match difficulty: {difficulty}
-- MUST match examiner style: {examiner_mode}
-- DO NOT ignore instructions
-- Questions MUST be relevant to selected section only
+══════════════════════════════
+STRICT REQUIREMENTS
+══════════════════════════════
 
-SECTION RULES:
-- Basic → simple conceptual understanding
-- Technical → code, architecture, implementation details
-- Logical → reasoning, problem solving
-- Overall → mixed evaluation
-- Presentation → communication & explanation skills
-- Defense → critical questioning
+1. Questions MUST come ONLY from uploaded project.
+2. NO generic questions.
+3. NO repeated wording.
+4. Every question MUST focus on a DIFFERENT feature/module.
+5. Questions must test REAL understanding.
+6. Questions must become progressively harder.
+7. Questions must match selected section EXACTLY.
+8. Questions should sound natural and professional.
 
-PROJECT:
-{project_text[:12000]}
+══════════════════════════════
+EXAM MODE
+══════════════════════════════
 
-FORMAT:
+System Mode:
+{system_mode}
+
+Examiner Style:
+{examiner_mode}
+
+Difficulty:
+{difficulty}
+
+Selected Section:
+{section}
+
+══════════════════════════════
+SECTION BEHAVIOR
+══════════════════════════════
+
+IF section = Basic:
+- Ask beginner-friendly understanding questions
+- Ask purpose/features/basic workflow
+
+IF section = Technical:
+- Ask architecture
+- Ask APIs
+- Ask database logic
+- Ask implementation details
+- Ask model/algorithm reasoning
+- Ask backend/frontend integration
+
+IF section = Logical:
+- Ask problem-solving questions
+- Ask optimization reasoning
+- Ask edge cases
+- Ask debugging logic
+- Ask scalability questions
+
+IF section = Presentation:
+- Ask explanation and communication questions
+- Ask project demonstration style questions
+
+IF section = Defense:
+- Challenge design decisions
+- Ask why this approach was chosen
+- Ask limitations
+- Ask security concerns
+- Ask real-world deployment issues
+
+IF section = Overall:
+- Mix all types intelligently
+
+══════════════════════════════
+PROJECT CONTENT
+══════════════════════════════
+
+{project_text[:15000]}
+
+══════════════════════════════
+IMPORTANT INTELLIGENCE RULES
+══════════════════════════════
+
+- Detect technologies automatically
+- Detect project modules automatically
+- Detect AI/ML features if present
+- Detect authentication/database logic if present
+- Detect APIs/frameworks if present
+- Detect deployment stack if present
+
+══════════════════════════════
+OUTPUT FORMAT (STRICT)
+══════════════════════════════
+
 Q1: ...
 Q2: ...
 Q3: ...
@@ -199,49 +266,81 @@ Q5: ...
 Q6: ...
 """
 
-    res = requests.post(
-        CHAT_URL,
-        headers={
-            "Authorization": f"Bearer {GROQ_API_KEY}",
-            "Content-Type": "application/json"
-        },
-        json={
-            "model": "llama-3.1-8b-instant",
-            "messages": [{"role": "user", "content": prompt}],
-            "temperature": 0.2
-        }
-    )
+    try:
 
-    data = res.json()
+        res = requests.post(
+            CHAT_URL,
+            headers={
+                "Authorization": f"Bearer {GROQ_API_KEY}",
+                "Content-Type": "application/json"
+            },
+            json={
+                "model": "llama-3.1-8b-instant",
+                "messages": [
+                    {
+                        "role": "user",
+                        "content": prompt
+                    }
+                ],
+                "temperature": 0.4
+            }
+        )
 
-    if "choices" not in data:
+        data = res.json()
+
+        if "choices" not in data:
+
+            return [
+                "Explain your project architecture.",
+                "Describe the system workflow.",
+                "How does your backend communicate with frontend?",
+                "What challenges did you face?",
+                "How can your project scale?",
+                "What improvements would you add?"
+            ]
+
+        raw = data["choices"][0]["message"]["content"]
+
+        questions = []
+
+        for line in raw.split("\n"):
+
+            line = line.strip()
+
+            if line.startswith("Q") and ":" in line:
+
+                q = line.split(":", 1)[1].strip()
+
+                if q and q not in questions:
+                    questions.append(q)
+
+        # fallback safety
+
+        if len(questions) < 6:
+
+            fallback = [
+                "Explain the architecture of your project.",
+                "Describe the core workflow of your system.",
+                "Which technologies are used and why?",
+                "How does your application handle user interaction?",
+                "What technical challenges did you face?",
+                "What future improvements would you add?"
+            ]
+
+            return fallback
+
+        return questions[:6]
+
+    except Exception:
+
         return [
-            f"Explain your {section} part of project.",
-            "Describe system architecture.",
-            "What technologies are used?",
-            "Explain workflow.",
-            "What challenges did you face?",
-            "What improvements can be made?"
+            "Explain the architecture of your project.",
+            "Describe the core workflow of your system.",
+            "Which technologies are used and why?",
+            "How does your application handle user interaction?",
+            "What technical challenges did you face?",
+            "What future improvements would you add?"
         ]
-
-    raw = data["choices"][0]["message"]["content"]
-
-    questions = []
-    for line in raw.split("\n"):
-        if line.startswith("Q") and ":" in line:
-            questions.append(line.split(":", 1)[1].strip())
-
-    if len(questions) < 6:
-        return [
-            f"Explain your {section} module.",
-            "Describe architecture.",
-            "Explain implementation.",
-            "What challenges did you face?",
-            "How does system work?",
-            "What improvements can be made?"
-        ]
-
-    return questions[:6]
     
 # =====================================================
 # ANSWER EVALUATION
