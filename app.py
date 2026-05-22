@@ -789,7 +789,7 @@ if audio is not None:
 
         st.success("Transcription Complete ✅")
 
-            answer = st.session_state.voice_answers.get(i, "")
+        answer = st.session_state.voice_answers.get(i, "")
 
             if answer:
 
