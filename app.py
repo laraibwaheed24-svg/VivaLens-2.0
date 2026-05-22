@@ -166,100 +166,213 @@ def transcribe_audio(audio_bytes):
 # Generate Questions
 # ===============================
 
+# =====================================================
+# QUESTION GENERATION
+# =====================================================
+
 def generate_questions(project_text, section, difficulty, examiner_mode, system_mode):
 
+    # =========================================
+    # SECTION INSTRUCTIONS
+    # =========================================
+
+    section_instruction = ""
+
+    if section == "Basic":
+        section_instruction = """
+- Ask beginner-friendly understanding questions
+- Focus on project purpose and simple concepts
+- Avoid deep technical implementation
+"""
+
+    elif section == "Technical":
+        section_instruction = """
+- Ask highly technical implementation questions
+- Focus on architecture, APIs, database, models, libraries, workflow, backend logic
+- Ask code-level and system design questions
+- Questions MUST test real technical understanding
+"""
+
+    elif section == "Logical":
+        section_instruction = """
+- Ask reasoning and problem-solving questions
+- Focus on decision-making and project logic
+- Ask why specific approaches were chosen
+- Include edge cases and optimization thinking
+"""
+
+    elif section == "Overall":
+        section_instruction = """
+- Generate mixed viva questions
+- Cover architecture, workflow, logic and implementation
+- Simulate complete final viva exam
+"""
+
+    elif section == "Technical Depth":
+        section_instruction = """
+- Ask deep implementation-level technical questions
+- Focus on internal working of modules
+- Ask scalability, performance and architecture questions
+"""
+
+    elif section == "Presentation":
+        section_instruction = """
+- Ask presentation and explanation related questions
+- Focus on communication and clarity
+- Ask how student explains project decisions
+"""
+
+    elif section == "Defense":
+        section_instruction = """
+- Ask critical defense questions
+- Challenge project limitations
+- Ask security, scalability, weaknesses and improvements
+- Simulate strict external examiner behavior
+"""
+
+    else:
+        section_instruction = """
+- Ask balanced project-related viva questions
+"""
+
+    # =========================================
+    # DIFFICULTY INSTRUCTIONS
+    # =========================================
+
+    difficulty_instruction = ""
+
+    if difficulty == "Easy":
+        difficulty_instruction = """
+- Keep questions simple
+- Focus on direct understanding
+- Avoid tricky or analytical questions
+"""
+
+    elif difficulty == "Medium":
+        difficulty_instruction = """
+- Mix conceptual and technical questions
+- Moderate difficulty
+"""
+
+    elif difficulty == "Difficult":
+        difficulty_instruction = """
+- Ask advanced implementation questions
+- Include reasoning and architecture analysis
+"""
+
+    elif difficulty == "Expert":
+        difficulty_instruction = """
+- Ask extremely challenging viva questions
+- Include optimization, scalability, edge cases and defense
+- Simulate expert-level university examiner
+"""
+
+    # =========================================
+    # EXAMINER MODE INSTRUCTIONS
+    # =========================================
+
+    examiner_instruction = ""
+
+    if "Friendly" in examiner_mode:
+        examiner_instruction = """
+- Tone should be supportive and student-friendly
+"""
+
+    elif "Strict" in examiner_mode:
+        examiner_instruction = """
+- Tone should be strict and professional
+- Ask direct and serious viva questions
+"""
+
+    elif "Interview" in examiner_mode:
+        examiner_instruction = """
+- Questions should feel like technical interview
+- Focus on real-world implementation
+"""
+
+    elif "Rapid Fire" in examiner_mode:
+        examiner_instruction = """
+- Questions should be short and quick
+- Fast-paced viva style
+"""
+
+    elif "Defense Panel" in examiner_mode:
+        examiner_instruction = """
+- Questions should challenge project deeply
+- Simulate thesis defense panel
+"""
+
+    elif "External Examiner" in examiner_mode:
+        examiner_instruction = """
+- Professional and strict university external examiner
+"""
+
+    elif "AI Strict Judge" in examiner_mode:
+        examiner_instruction = """
+- Extremely strict evaluation style
+- Deep analytical questioning
+"""
+
+    # =========================================
+    # FINAL PROMPT
+    # =========================================
+
     prompt = f"""
-You are an elite university viva examiner AI.
+You are an expert university viva examiner.
 
-Your task is to generate EXACTLY 6 highly intelligent viva questions.
+Your task is to generate EXACTLY 6 viva questions.
 
-══════════════════════════════
-STRICT REQUIREMENTS
-══════════════════════════════
-
-1. Questions MUST come ONLY from uploaded project.
-2. NO generic questions.
-3. NO repeated wording.
-4. Every question MUST focus on a DIFFERENT feature/module.
-5. Questions must test REAL understanding.
-6. Questions must become progressively harder.
-7. Questions must match selected section EXACTLY.
-8. Questions should sound natural and professional.
-
-══════════════════════════════
-EXAM MODE
-══════════════════════════════
-
-System Mode:
+==================================================
+SYSTEM MODE
+==================================================
 {system_mode}
 
-Examiner Style:
-{examiner_mode}
-
-Difficulty:
-{difficulty}
-
-Selected Section:
+==================================================
+SECTION TYPE
+==================================================
 {section}
 
-══════════════════════════════
-SECTION BEHAVIOR
-══════════════════════════════
+{section_instruction}
 
-IF section = Basic:
-- Ask beginner-friendly understanding questions
-- Ask purpose/features/basic workflow
+==================================================
+DIFFICULTY
+==================================================
+{difficulty}
 
-IF section = Technical:
-- Ask architecture
-- Ask APIs
-- Ask database logic
-- Ask implementation details
-- Ask model/algorithm reasoning
-- Ask backend/frontend integration
+{difficulty_instruction}
 
-IF section = Logical:
-- Ask problem-solving questions
-- Ask optimization reasoning
-- Ask edge cases
-- Ask debugging logic
-- Ask scalability questions
+==================================================
+EXAMINER STYLE
+==================================================
+{examiner_mode}
 
-IF section = Presentation:
-- Ask explanation and communication questions
-- Ask project demonstration style questions
+{examiner_instruction}
 
-IF section = Defense:
-- Challenge design decisions
-- Ask why this approach was chosen
-- Ask limitations
-- Ask security concerns
-- Ask real-world deployment issues
+==================================================
+STRICT RULES
+==================================================
+- Questions MUST follow selected section strictly
+- Questions MUST follow selected difficulty strictly
+- Questions MUST follow selected examiner style strictly
+- Questions MUST come ONLY from uploaded project
+- Do NOT ask generic theory questions
+- Do NOT ask unrelated questions
+- Each question should focus on DIFFERENT project aspect
+- Q1 easiest
+- Q6 hardest
+- Technical section MUST contain technical questions
+- Logical section MUST contain reasoning questions
+- Defense section MUST contain critical challenge questions
+- Presentation section MUST contain explanation/presentation questions
 
-IF section = Overall:
-- Mix all types intelligently
-
-══════════════════════════════
+==================================================
 PROJECT CONTENT
-══════════════════════════════
+==================================================
+{project_text[:12000]}
 
-{project_text[:15000]}
-
-══════════════════════════════
-IMPORTANT INTELLIGENCE RULES
-══════════════════════════════
-
-- Detect technologies automatically
-- Detect project modules automatically
-- Detect AI/ML features if present
-- Detect authentication/database logic if present
-- Detect APIs/frameworks if present
-- Detect deployment stack if present
-
-══════════════════════════════
-OUTPUT FORMAT (STRICT)
-══════════════════════════════
-
+==================================================
+OUTPUT FORMAT
+==================================================
 Q1: ...
 Q2: ...
 Q3: ...
@@ -284,7 +397,7 @@ Q6: ...
                         "content": prompt
                     }
                 ],
-                "temperature": 0.4
+                "temperature": 0.7
             }
         )
 
@@ -293,12 +406,12 @@ Q6: ...
         if "choices" not in data:
 
             return [
-                "Explain your project architecture.",
-                "Describe the system workflow.",
-                "How does your backend communicate with frontend?",
+                f"Explain the {section} aspects of your project.",
+                "Describe your project workflow.",
+                "What technologies did you use?",
+                "Explain your implementation approach.",
                 "What challenges did you face?",
-                "How can your project scale?",
-                "What improvements would you add?"
+                "What future improvements can be made?"
             ]
 
         raw = data["choices"][0]["message"]["content"]
@@ -313,37 +426,36 @@ Q6: ...
 
                 q = line.split(":", 1)[1].strip()
 
-                if q and q not in questions:
+                if q:
                     questions.append(q)
 
-        # fallback safety
+        # =========================================
+        # SAFETY FALLBACK
+        # =========================================
 
         if len(questions) < 6:
 
-            fallback = [
-                "Explain the architecture of your project.",
-                "Describe the core workflow of your system.",
-                "Which technologies are used and why?",
-                "How does your application handle user interaction?",
-                "What technical challenges did you face?",
-                "What future improvements would you add?"
+            return [
+                f"Explain the {section} aspects of your project.",
+                "Describe your project architecture.",
+                "Explain the technologies used.",
+                "How does your system work internally?",
+                "What challenges did you face?",
+                "What improvements can be made?"
             ]
-
-            return fallback
 
         return questions[:6]
 
     except Exception:
 
         return [
-            "Explain the architecture of your project.",
-            "Describe the core workflow of your system.",
-            "Which technologies are used and why?",
-            "How does your application handle user interaction?",
-            "What technical challenges did you face?",
-            "What future improvements would you add?"
+            f"Explain the {section} aspects of your project.",
+            "Describe your project architecture.",
+            "Explain the technologies used.",
+            "How does your system work internally?",
+            "What challenges did you face?",
+            "What improvements can be made?"
         ]
-    
 # =====================================================
 # ANSWER EVALUATION
 # =====================================================
