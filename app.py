@@ -748,38 +748,40 @@ if st.session_state.questions:
         if answer_mode == "Voice":
 
             audio = st.audio_input(
-    "🎤 Speak Your Answer",
-    key=f"audio_{i}"
-)
+                "🎤 Speak Your Answer",
+                key=f"audio_{i}"
+            )
 
-if audio is not None:
+            answer = ""
 
-    st.audio(audio)
+            if audio is not None:
 
-    if st.button(
-        "🧠 Transcribe",
-        key=f"transcribe_{i}"
-    ):
+                st.audio(audio)
 
-        with st.spinner("Transcribing..."):
+                if st.button(
+                    "🧠 Transcribe",
+                    key=f"transcribe_{i}"
+                ):
 
-            # READ AUDIO CORRECTLY
-            audio_bytes = audio.read()
+                    with st.spinner("Transcribing..."):
 
-            text = transcribe_audio(audio_bytes)
+                        # READ AUDIO PROPERLY
+                        audio_bytes = audio.getvalue()
 
-            st.session_state.voice_answers[i] = text
+                        text = transcribe_audio(audio_bytes)
 
-        st.success("Transcription Complete ✅")
+                        st.session_state.voice_answers[i] = text
 
-        answer = st.session_state.voice_answers.get(i, "")
+                    st.success("Transcription Complete ✅")
 
-        if answer:
+            answer = st.session_state.voice_answers.get(i, "")
+
+            if answer:
 
                 st.text_area(
                     "Transcribed Answer",
                     value=answer,
-                    disabled=True,
+                    disabled=False,
                     height=180,
                     key=f"display_{i}"
                 )
@@ -795,7 +797,6 @@ if audio is not None:
                 height=180,
                 key=f"text_{i}"
             )
-
         # =========================================
         # BUTTONS
         # =========================================
