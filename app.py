@@ -791,7 +791,7 @@ if audio is not None:
 
         answer = st.session_state.voice_answers.get(i, "")
 
-            if answer:
+        if answer:
 
                 st.text_area(
                     "Transcribed Answer",
