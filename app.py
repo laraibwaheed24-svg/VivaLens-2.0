@@ -149,10 +149,10 @@ def transcribe_audio(audio_bytes):
                     "Authorization": f"Bearer {GROQ_API_KEY}"
                 },
                 files={
-                    "file": audio_file
+                    "file": ("audio.wav", audio_file, "audio/wav")
                 },
                 data={
-                    "model": "whisper-large-v3-turbo"
+                    "model": "whisper-large-v3"
                 }
             )
 
@@ -160,12 +160,14 @@ def transcribe_audio(audio_bytes):
 
         result = response.json()
 
-        return result.get("text", "")
+        if "text" in result:
+            return result["text"]
+
+        return "No speech detected"
 
     except Exception as e:
 
-        return f"Error: {str(e)}"
-
+        return f"Transcription Error: {str(e)}"
 
 # =====================================================
 # QUESTION GENERATION
