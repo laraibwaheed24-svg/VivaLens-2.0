@@ -783,9 +783,6 @@ if st.button("🚀 Generate Viva Questions"):
         st.success("Questions Generated Successfully ✅")
 
 
-if warning_value:
-    st.session_state.warnings = int(warning_value)
-
 # =====================================================
 # QUESTION FLOW
 # =====================================================
