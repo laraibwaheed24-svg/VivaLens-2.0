@@ -9,6 +9,7 @@ import tempfile
 from datetime import datetime
 from fpdf import FPDF
 
+
 # =====================================================
 # PAGE CONFIG
 # =====================================================
