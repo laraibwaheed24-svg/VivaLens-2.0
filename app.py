@@ -66,6 +66,49 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
+# =======================
+# Anti-Cheat
+# =======================
+
+st.components.v1.html("""
+<script>
+
+let warningCount = 0;
+
+document.addEventListener("visibilitychange", function() {
+
+    if (document.hidden) {
+
+        warningCount += 1;
+
+        alert(
+            "⚠️ Warning: Tab switching detected! Warning Count: "
+            + warningCount
+        );
+
+        window.parent.postMessage({
+            type: "TAB_SWITCH",
+            count: warningCount
+        }, "*");
+    }
+});
+
+document.addEventListener("keydown", function(e) {
+
+    // Detect CTRL+V
+    if (e.ctrlKey && e.key === "v") {
+
+        alert("⚠️ Copy-Paste is not allowed!");
+
+        window.parent.postMessage({
+            type: "COPY_PASTE"
+        }, "*");
+    }
+});
+
+</script>
+""", height=0)
+
 
 # =====================================================
 # ANTI CHEAT SYSTEM
