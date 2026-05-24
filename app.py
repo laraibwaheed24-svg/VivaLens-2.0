@@ -74,7 +74,7 @@ import streamlit.components.v1 as components
 components.html("""
 <script>
 
-let warningCount = localStorage.getItem("warnings") || "0";
+let warningCount = localStorage.getItem("warnings") || 0;
 
 document.addEventListener("visibilitychange", function () {
     if (document.hidden) {
@@ -90,24 +90,8 @@ document.addEventListener("keydown", function (e) {
     }
 });
 
-setInterval(() => {
-
-    const warnings = localStorage.getItem("warnings") || "0";
-
-    const input = window.parent.document.querySelector(
-        'input[aria-label="hidden_warning_sync"]'
-    );
-
-    if (input) {
-        input.value = warnings;
-        input.dispatchEvent(new Event('input', { bubbles: true }));
-    }
-
-}, 1000);
-
 </script>
 """, height=0)
-
 # =====================================================
 # LOAD WARNING COUNT
 # =====================================================
@@ -794,16 +778,11 @@ else:
     )
 
     
-    warning_value = st.text_input(
-    "hidden_warning_sync",
-    value="",
-    label_visibility="collapsed"
+ st.session_state.warnings = int(
+    st.session_state.get("warnings", 0)
 )
 st.sidebar.markdown("### 🚨 Anti-Cheat Monitor")
-
-st.sidebar.error(
-    f"Warnings: {st.session_state.warnings}"
-)
+st.sidebar.error(f"Warnings: {st.session_state.warnings}")
 
 # =====================================================
 # FILE UPLOAD
