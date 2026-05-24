@@ -69,11 +69,8 @@ st.markdown("""
 # ANTI CHEAT SYSTEM
 # =====================================================
 
-import streamlit.components.v1 as components
-
 components.html("""
 <script>
-
 let warningCount = localStorage.getItem("warnings") || 0;
 
 document.addEventListener("visibilitychange", function () {
@@ -84,38 +81,13 @@ document.addEventListener("visibilitychange", function () {
 });
 
 document.addEventListener("keydown", function (e) {
-    if (e.ctrlKey && e.key === "v") {
+    if (e.ctrlKey && e.key.toLowerCase() === "v") {
         warningCount = Number(warningCount) + 1;
         localStorage.setItem("warnings", warningCount);
     }
 });
-
 </script>
 """, height=0)
-# =====================================================
-# LOAD WARNING COUNT
-# =====================================================
-
-warning_js = components.html(
-    """
-    <script>
-
-    const warnings =
-        localStorage.getItem("warningCount") || 0;
-
-    window.parent.postMessage(
-        {
-            type: "streamlit:setComponentValue",
-            value: warnings
-        },
-        "*"
-    );
-
-    </script>
-    """,
-    height=0
-)
-
 
 
 
@@ -775,6 +747,38 @@ else:
         "Answer Mode",
         ["Voice", "Text"]
     )
+
+# ================================
+# ANTI-CHEAT SYNC (STEP 3 FIX)
+# ================================
+
+warning_value = st.text_input(
+    "hidden_warning_sync",
+    value="",
+    label_visibility="collapsed"
+)
+
+import streamlit.components.v1 as components
+
+components.html("""
+<script>
+setInterval(() => {
+    const w = localStorage.getItem("warnings") || 0;
+
+    window.parent.postMessage({
+        type: "streamlit:setComponentValue",
+        value: w
+    }, "*");
+
+}, 1000);
+</script>
+""", height=0)
+
+if warning_value:
+    st.session_state.warnings = int(warning_value)
+
+
+st.sidebar.metric("⚠️ Warnings", st.session_state.warnings)
     
 warning_value = st.text_input(
     "hidden_warning_sync",
