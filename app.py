@@ -64,49 +64,87 @@ st.markdown("""
 }
 </style>
 """, unsafe_allow_html=True)
+# =====================================================
 
-# =============================
-# Anti-Cheat JavaScript
-# =============================
+import streamlit.components.v1 as components
 
-st.components.v1.html("""
-<script>
+# =====================================================
+# ANTI CHEAT SYSTEM
+# =====================================================
 
-let warningCount = 0;
+components.html(
+    """
+    <script>
 
-document.addEventListener("visibilitychange", function() {
+    let warningCount = 0;
 
-    if (document.hidden) {
+    document.addEventListener("visibilitychange", function() {
 
-        warningCount += 1;
+        if (document.hidden) {
 
-        alert(
-            "⚠️ Warning: Tab switching detected! Warning Count: "
-            + warningCount
-        );
+            warningCount++;
 
-        window.parent.postMessage({
-            type: "TAB_SWITCH",
-            count: warningCount
-        }, "*");
-    }
-});
+            alert(
+                "⚠️ Warning! Tab switching detected. Warnings: "
+                + warningCount
+            );
 
-document.addEventListener("keydown", function(e) {
+            localStorage.setItem(
+                "warningCount",
+                warningCount
+            );
+        }
+    });
 
-    // Detect CTRL+V
-    if (e.ctrlKey && e.key === "v") {
+    document.addEventListener("keydown", function(e) {
 
-        alert("⚠️ Copy-Paste is not allowed!");
+        if (e.ctrlKey && e.key === "v") {
 
-        window.parent.postMessage({
-            type: "COPY_PASTE"
-        }, "*");
-    }
-});
+            alert("⚠️ Copy Paste Detected!");
 
-</script>
-""", height=0)
+            warningCount++;
+
+            localStorage.setItem(
+                "warningCount",
+                warningCount
+            );
+        }
+    });
+
+    </script>
+    """,
+    height=0
+)
+
+
+# =====================================================
+# LOAD WARNING COUNT
+# =====================================================
+
+warning_js = components.html(
+    """
+    <script>
+
+    const warnings =
+        localStorage.getItem("warningCount") || 0;
+
+    window.parent.postMessage(
+        {
+            type: "streamlit:setComponentValue",
+            value: warnings
+        },
+        "*"
+    );
+
+    </script>
+    """,
+    height=0
+)
+
+if warning_js:
+
+    st.session_state.warnings = int(warning_js)
+
 
 # =====================================================
 # API CONFIG
