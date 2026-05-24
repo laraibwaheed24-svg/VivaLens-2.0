@@ -64,58 +64,49 @@ st.markdown("""
 }
 </style>
 """, unsafe_allow_html=True)
-# =====================================================
-
-import streamlit.components.v1 as components
 
 # =====================================================
 # ANTI CHEAT SYSTEM
 # =====================================================
 
-components.html(
-    """
-    <script>
+import streamlit.components.v1 as components
 
-    let warningCount = 0;
+components.html("""
+<script>
 
-    document.addEventListener("visibilitychange", function() {
+let warningCount = localStorage.getItem("warnings") || "0";
 
-        if (document.hidden) {
+document.addEventListener("visibilitychange", function () {
+    if (document.hidden) {
+        warningCount = Number(warningCount) + 1;
+        localStorage.setItem("warnings", warningCount);
+    }
+});
 
-            warningCount++;
+document.addEventListener("keydown", function (e) {
+    if (e.ctrlKey && e.key === "v") {
+        warningCount = Number(warningCount) + 1;
+        localStorage.setItem("warnings", warningCount);
+    }
+});
 
-            alert(
-                "⚠️ Warning! Tab switching detected. Warnings: "
-                + warningCount
-            );
+setInterval(() => {
 
-            localStorage.setItem(
-                "warningCount",
-                warningCount
-            );
-        }
-    });
+    const warnings = localStorage.getItem("warnings") || "0";
 
-    document.addEventListener("keydown", function(e) {
+    const input = window.parent.document.querySelector(
+        'input[aria-label="hidden_warning_sync"]'
+    );
 
-        if (e.ctrlKey && e.key === "v") {
+    if (input) {
+        input.value = warnings;
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+    }
 
-            alert("⚠️ Copy Paste Detected!");
+}, 1000);
 
-            warningCount++;
-
-            localStorage.setItem(
-                "warningCount",
-                warningCount
-            );
-        }
-    });
-
-    </script>
-    """,
-    height=0
-)
-
+</script>
+""", height=0)
 
 # =====================================================
 # LOAD WARNING COUNT
@@ -171,7 +162,8 @@ defaults = {
     "final_result": None,
     "voice_answers": {},
     "admin_logged_in": False,
-    "warnings": 0
+    "warnings": 0,
+    "warning_sync": ""
 }
 
 for k, v in defaults.items():
@@ -801,6 +793,18 @@ else:
         ["Voice", "Text"]
     )
 
+    
+    warning_value = st.text_input(
+    "hidden_warning_sync",
+    value="",
+    label_visibility="collapsed"
+)
+st.sidebar.markdown("### 🚨 Anti-Cheat Monitor")
+
+st.sidebar.error(
+    f"Warnings: {st.session_state.warnings}"
+)
+
 # =====================================================
 # FILE UPLOAD
 # =====================================================
@@ -855,14 +859,15 @@ if st.button("🚀 Generate Viva Questions"):
 
         st.success("Questions Generated Successfully ✅")
 
+
+if warning_value:
+    st.session_state.warnings = int(warning_value)
+
+
 # =====================================================
 # QUESTION FLOW
 # =====================================================
 
-st.sidebar.markdown("### 🚨 Anti Cheat Monitor")
-st.sidebar.error(
-    f"Warnings: {st.session_state.warnings}"
-)
 
 
 if st.session_state.questions:
