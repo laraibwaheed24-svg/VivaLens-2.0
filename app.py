@@ -173,40 +173,48 @@ def transcribe_audio(audio_file):
 
 
 # =====================================================
-# LOGIN SYSTEM
+# AUTH SYSTEM
 # =====================================================
 
-if "authenticated" not in st.session_state:
-    st.session_state.authenticated = False
+def admin_login():
 
-if st.session_state.mode == "University Final Exam":
+    st.markdown("---")
+    st.subheader("🔐 Final Exam Authentication")
 
-    if not st.session_state.authenticated:
+    username = st.text_input(
+        "Examiner Username",
+        key="admin_user"
+    )
 
-        st.markdown("## 🔐 Official Login Required")
+    password = st.text_input(
+        "Password",
+        type="password",
+        key="admin_pass"
+    )
 
-        username = st.text_input("Username")
-        password = st.text_input("Password", type="password")
+    if st.button("Login to Final Exam Mode"):
 
-        if st.button("Login"):
+        ADMIN_USER = "Laraib_Waheed"
+        ADMIN_PASS = "vivalens123"
 
-            admin_user = st.secrets["ADMIN_USER"]
-            admin_pass = st.secrets["ADMIN_PASS"]
+        # REMOVE SPACES SAFELY
+        username = username.strip()
+        password = password.strip()
 
-            if (
-                username.strip() == admin_user.strip()
-                and password.strip() == admin_pass.strip()
-            ):
+        if (
+            username == ADMIN_USER
+            and password == ADMIN_PASS
+        ):
 
-                st.session_state.authenticated = True
-                st.success("Login Successful ✅")
-                st.rerun()
+            st.session_state.admin_logged_in = True
 
-            else:
+            st.success("✅ Authentication Successful")
 
-                st.error("Invalid Credentials")
+            st.rerun()
 
-        st.stop()
+        else:
+
+            st.error("❌ Invalid Credentials")
 
 
 
