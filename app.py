@@ -1,15 +1,14 @@
 
-
 import streamlit as st
 import requests
 from PyPDF2 import PdfReader
 from docx import Document
 import pandas as pd
 import os
-import tempfile
 from datetime import datetime
 from fpdf import FPDF
-
+import re
+import streamlit.components.v1 as components  # ✅ FIX 1: moved here
 
 # =====================================================
 # PAGE CONFIG
@@ -67,9 +66,11 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
+
 # =====================================================
 # ANTI CHEAT SYSTEM
 # =====================================================
+
 
 components.html("""
 <script>
@@ -88,8 +89,32 @@ document.addEventListener("keydown", function (e) {
         localStorage.setItem("warnings", warningCount);
     }
 });
+
+setInterval(() => {
+    const w = localStorage.getItem("warnings") || 0;
+
+    window.parent.postMessage({
+        type: "streamlit:setComponentValue",
+        value: w
+    }, "*");
+}, 800);
 </script>
 """, height=0)
+
+
+# =====================================================
+# WARNING SYNC
+# =====================================================
+
+warning_value = st.text_input(
+    "hidden_warning_sync",
+    value="",
+    label_visibility="collapsed"
+)
+
+if warning_value:
+    st.session_state.warnings = int(warning_value)
+
 
 
 
