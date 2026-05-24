@@ -116,9 +116,7 @@ warning_js = components.html(
     height=0
 )
 
-if warning_js:
 
-    st.session_state.warnings = int(warning_js)
 
 
 # =====================================================
