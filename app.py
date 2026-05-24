@@ -782,8 +782,6 @@ warning_value = st.text_input(
     label_visibility="collapsed"
 )
     
-st.sidebar.markdown("### 🚨 Anti-Cheat Monitor")
-st.sidebar.error(f"Warnings: {st.session_state.warnings}")
 
 # =====================================================
 # FILE UPLOAD
