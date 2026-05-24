@@ -859,8 +859,8 @@ if st.button("🚀 Generate Viva Questions"):
 # QUESTION FLOW
 # =====================================================
 
-st.sidebar.markdown("### 🚨 Anti-Cheat Monitor")
-st.sidebar.warning(
+st.sidebar.markdown("### 🚨 Anti Cheat Monitor")
+st.sidebar.error(
     f"Warnings: {st.session_state.warnings}"
 )
 
