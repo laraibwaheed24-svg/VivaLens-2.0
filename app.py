@@ -70,22 +70,6 @@ st.markdown("""
 
 
 # =====================================================
-# WARNING SYNC
-# =====================================================
-
-warning_value = st.text_input(
-    "hidden_warning_sync",
-    value="",
-    label_visibility="collapsed"
-)
-
-if warning_value:
-    st.session_state.warnings = int(warning_value)
-
-
-
-
-# =====================================================
 # API CONFIG
 # =====================================================
 
