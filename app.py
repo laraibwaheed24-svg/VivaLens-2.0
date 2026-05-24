@@ -88,7 +88,8 @@ defaults = {
     "answers": [],
     "q_index": 0,
     "final_result": None,
-    "voice_answers": {}
+    "voice_answers": {},
+    "admin_logged_in": False
 }
 
 for k, v in defaults.items():
@@ -169,7 +170,40 @@ def transcribe_audio(audio_file):
     except Exception as e:
 
         return f"Transcription Error: {str(e)}"
-        
+
+
+# =====================================================
+# AUTH SYSTEM
+# =====================================================
+
+def admin_login():
+
+    st.markdown("---")
+    st.subheader("🔐 Final Exam Authentication")
+
+    username = st.text_input("Examiner Username")
+    password = st.text_input("Password", type="password")
+
+    if st.button("Login to Final Exam Mode"):
+
+        # CHANGE THESE LATER
+        ADMIN_USER = "admin"
+        ADMIN_PASS = "vivalens123"
+
+        if username == ADMIN_USER and password == ADMIN_PASS:
+
+            st.session_state.admin_logged_in = True
+
+            st.success("✅ Authentication Successful")
+
+            st.rerun()
+
+        else:
+
+            st.error("❌ Invalid Credentials")
+
+
+
 # =====================================================
 # QUESTION GENERATION
 # =====================================================
@@ -686,11 +720,18 @@ uploaded_file = st.file_uploader(
 
 if st.session_state.mode == "University Final Exam":
 
+    if not st.session_state.admin_logged_in:
+
+        admin_login()
+        st.stop()
+
+    st.success("🔐 Examiner Authenticated")
+
     name = st.text_input("Student Name")
     roll = st.text_input("Roll Number")
     dept = st.text_input("Department")
     project_title = st.text_input("Project Title")
-
+    
 # =====================================================
 # GENERATE QUESTIONS
 # =====================================================
