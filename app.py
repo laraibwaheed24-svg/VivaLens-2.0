@@ -65,6 +65,49 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
+# =============================
+# Anti-Cheat JavaScript
+# =============================
+
+st.components.v1.html("""
+<script>
+
+let warningCount = 0;
+
+document.addEventListener("visibilitychange", function() {
+
+    if (document.hidden) {
+
+        warningCount += 1;
+
+        alert(
+            "⚠️ Warning: Tab switching detected! Warning Count: "
+            + warningCount
+        );
+
+        window.parent.postMessage({
+            type: "TAB_SWITCH",
+            count: warningCount
+        }, "*");
+    }
+});
+
+document.addEventListener("keydown", function(e) {
+
+    // Detect CTRL+V
+    if (e.ctrlKey && e.key === "v") {
+
+        alert("⚠️ Copy-Paste is not allowed!");
+
+        window.parent.postMessage({
+            type: "COPY_PASTE"
+        }, "*");
+    }
+});
+
+</script>
+""", height=0)
+
 # =====================================================
 # API CONFIG
 # =====================================================
@@ -89,7 +132,8 @@ defaults = {
     "q_index": 0,
     "final_result": None,
     "voice_answers": {},
-    "admin_logged_in": False
+    "admin_logged_in": False,
+    "warnings": 0
 }
 
 for k, v in defaults.items():
@@ -776,6 +820,12 @@ if st.button("🚀 Generate Viva Questions"):
 # =====================================================
 # QUESTION FLOW
 # =====================================================
+
+st.sidebar.markdown("### 🚨 Anti-Cheat Monitor")
+st.sidebar.warning(
+    f"Warnings: {st.session_state.warnings}"
+)
+
 
 if st.session_state.questions:
 
