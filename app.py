@@ -845,11 +845,6 @@ if warning_value:
 
 st.sidebar.metric("⚠️ Warnings", st.session_state.warnings)
     
-warning_value = st.text_input(
-    "hidden_warning_sync",
-    value="",
-    label_visibility="collapsed"
-)
     
 
 # =====================================================
