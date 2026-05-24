@@ -68,40 +68,6 @@ st.markdown("""
 
 
 
-# =====================================================
-# ANTI CHEAT SYSTEM
-# =====================================================
-
-
-components.html("""
-<script>
-let warningCount = localStorage.getItem("warnings") || 0;
-
-document.addEventListener("visibilitychange", function () {
-    if (document.hidden) {
-        warningCount = Number(warningCount) + 1;
-        localStorage.setItem("warnings", warningCount);
-    }
-});
-
-document.addEventListener("keydown", function (e) {
-    if (e.ctrlKey && e.key.toLowerCase() === "v") {
-        warningCount = Number(warningCount) + 1;
-        localStorage.setItem("warnings", warningCount);
-    }
-});
-
-setInterval(() => {
-    const w = localStorage.getItem("warnings") || 0;
-
-    window.parent.postMessage({
-        type: "streamlit:setComponentValue",
-        value: w
-    }, "*");
-}, 800);
-</script>
-""", height=0)
-
 
 # =====================================================
 # WARNING SYNC
