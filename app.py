@@ -8,7 +8,7 @@ import os
 from datetime import datetime
 from fpdf import FPDF
 import re
-import streamlit.components.v1 as components  # ✅ FIX 1: moved here
+
 
 # =====================================================
 # PAGE CONFIG
@@ -66,48 +66,6 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# =======================
-# Anti-Cheat
-# =======================
-
-st.components.v1.html("""
-<script>
-
-let warningCount = 0;
-
-document.addEventListener("visibilitychange", function() {
-
-    if (document.hidden) {
-
-        warningCount += 1;
-
-        alert(
-            "⚠️ Warning: Tab switching detected! Warning Count: "
-            + warningCount
-        );
-
-        window.parent.postMessage({
-            type: "TAB_SWITCH",
-            count: warningCount
-        }, "*");
-    }
-});
-
-document.addEventListener("keydown", function(e) {
-
-    // Detect CTRL+V
-    if (e.ctrlKey && e.key === "v") {
-
-        alert("⚠️ Copy-Paste is not allowed!");
-
-        window.parent.postMessage({
-            type: "COPY_PASTE"
-        }, "*");
-    }
-});
-
-</script>
-""", height=0)
 
 
 # =====================================================
@@ -817,33 +775,6 @@ else:
         "Answer Mode",
         ["Voice", "Text"]
     )
-
-# ================================
-# ANTI-CHEAT SYNC (STEP 3 FIX)
-# ================================
-
-
-import streamlit.components.v1 as components
-
-components.html("""
-<script>
-setInterval(() => {
-    const w = localStorage.getItem("warnings") || 0;
-
-    window.parent.postMessage({
-        type: "streamlit:setComponentValue",
-        value: w
-    }, "*");
-
-}, 1000);
-</script>
-""", height=0)
-
-if warning_value:
-    st.session_state.warnings = int(warning_value)
-
-
-st.sidebar.metric("⚠️ Warnings", st.session_state.warnings)
     
     
 
