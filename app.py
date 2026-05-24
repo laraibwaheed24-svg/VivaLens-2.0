@@ -822,11 +822,6 @@ else:
 # ANTI-CHEAT SYNC (STEP 3 FIX)
 # ================================
 
-warning_value = st.text_input(
-    "hidden_warning_sync",
-    value="",
-    label_visibility="collapsed"
-)
 
 import streamlit.components.v1 as components
 
