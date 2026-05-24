@@ -722,6 +722,10 @@ section = "Technical"
 difficulty = "Medium"
 examiner_mode = "Strict 😐"
 
+st.session_state.warnings = int(
+    st.session_state.get("warnings", 0)
+)
+
 if st.session_state.mode == "Student Practice":
 
     section = st.sidebar.radio(
@@ -778,9 +782,6 @@ else:
     )
 
     
- st.session_state.warnings = int(
-    st.session_state.get("warnings", 0)
-)
 st.sidebar.markdown("### 🚨 Anti-Cheat Monitor")
 st.sidebar.error(f"Warnings: {st.session_state.warnings}")
 
