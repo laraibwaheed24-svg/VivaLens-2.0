@@ -109,78 +109,66 @@ for k, v in defaults.items():
 
 if st.session_state.mode == "University Final Exam":
 
-    anti_cheat_code = """
-    <script>
+    cheat_detect = components.html(
+        """
+        <script>
 
-    let count = 0;
+        let warnings = 0;
 
-    function warnUser(reason) {
+        function sendWarning(reason) {
 
-        count++;
+            warnings++;
 
-        alert("Warning: " + reason);
+            const message = warnings + "|" + reason;
 
-        if (count >= 3) {
-
-            alert("Exam Terminated");
+            window.parent.postMessage({
+                type: "streamlit:setComponentValue",
+                value: message
+            }, "*");
 
         }
 
-        const streamlitDoc = window.parent.document;
+        document.addEventListener("visibilitychange", function() {
 
-        const warningBox = streamlitDoc.querySelector('input[data-testid="baseInput"]');
+            if (document.hidden) {
+                sendWarning("Tab Switching");
+            }
 
-        if (warningBox) {
-            warningBox.value = count;
-            warningBox.dispatchEvent(new Event('input', { bubbles: true }));
-        }
-    }
+        });
 
-    // TAB SWITCH
-    document.addEventListener("visibilitychange", function() {
+        document.addEventListener("copy", function() {
+            sendWarning("Copy Attempt");
+        });
 
-        if (document.hidden) {
-            warnUser("Tab Switching Detected");
-        }
+        document.addEventListener("paste", function() {
+            sendWarning("Paste Attempt");
+        });
 
-    });
+        document.addEventListener("contextmenu", function(e) {
 
-    // COPY
-    document.addEventListener("copy", function() {
-        warnUser("Copy Attempt Detected");
-    });
+            e.preventDefault();
 
-    // PASTE
-    document.addEventListener("paste", function() {
-        warnUser("Paste Attempt Detected");
-    });
+            sendWarning("Right Click");
 
-    // RIGHT CLICK
-    document.addEventListener("contextmenu", function(e) {
+        });
 
-        e.preventDefault();
-
-        warnUser("Right Click Disabled");
-
-    });
-
-    </script>
-    """
-
-    components.html(anti_cheat_code, height=0)
-
-    warning_value = st.text_input(
-        "warning_tracker",
-        value="0",
-        label_visibility="collapsed"
+        </script>
+        """,
+        height=0
     )
 
-    try:
-        st.session_state.warnings = int(warning_value)
-    except:
-        pass
+    if cheat_detect:
 
+        try:
 
+            count, reason = cheat_detect.split("|")
+
+            st.session_state.warnings = int(count)
+
+            st.sidebar.warning(f"🚨 {reason} Detected")
+
+        except:
+            pass
 
 # =====================================================
 # FILE READER
@@ -811,14 +799,14 @@ else:
     
 
 # =====================================================
-# AUTO TERMINATE EXAM
+# AUTO TERMINATION
 # =====================================================
 
 if st.session_state.warnings >= 3:
 
-    st.error("❌ Exam Terminated Due To Suspicious Activity")
+    st.error("❌ Exam Terminated Due To Cheating")
 
-    st.stop() 
+    st.stop()
 
 # =====================================================
 # FILE UPLOAD
