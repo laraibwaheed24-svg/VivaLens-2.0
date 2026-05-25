@@ -626,54 +626,30 @@ Q6: ...
 
 def evaluate_answer(q, a):
 
-    rubric_text = """
-You must evaluate strictly using this rubric:
-
-Technical Depth: 30%
-Concept Clarity: 25%
-Problem Solving: 25%
-Communication: 20%
-
-Return ONLY valid JSON like this:
-
-{
-  "technical_depth": score_out_of_30,
-  "concept_clarity": score_out_of_25,
-  "problem_solving": score_out_of_25,
-  "communication": score_out_of_20,
-  "total": score_out_of_100,
-  "feedback": "short improvement feedback"
-}
-"""
-
     prompt = f"""
-You are a strict but fair university examiner.
-
-Question:
-{q}
+Question: {q}
 
 Student Answer:
 {a}
 
-{rubric_text}
-
-Rules:
-- Be consistent across all students
-- Do NOT exaggerate marks
-- Penalize missing depth
-- Reward structured answers
+Give strict evaluation with score.
 """
 
     try:
+
         res = requests.post(
             CHAT_URL,
             headers={
-                "Authorization": f"Bearer {GROQ_API_KEY}",
-                "Content-Type": "application/json"
+                "Authorization": f"Bearer {GROQ_API_KEY}"
             },
             json={
                 "model": "llama-3.1-8b-instant",
-                "messages": [{"role": "user", "content": prompt}],
+                "messages": [
+                    {
+                        "role": "user",
+                        "content": prompt
+                    }
+                ],
                 "temperature": 0.2
             }
         )
@@ -681,30 +657,9 @@ Rules:
         return res.json()["choices"][0]["message"]["content"]
 
     except:
-        return json.dumps({
-            "technical_depth": 0,
-            "concept_clarity": 0,
-            "problem_solving": 0,
-            "communication": 0,
-            "total": 0,
-            "feedback": "Evaluation failed"
-        })
+        return "Evaluation failed."
 
 
-import json
-
-def parse_evaluation(evaluation_text):
-    try:
-        return json.loads(evaluation_text)
-    except:
-        return {
-            "technical_depth": 0,
-            "concept_clarity": 0,
-            "problem_solving": 0,
-            "communication": 0,
-            "total": 0,
-            "feedback": "Parsing failed"
-        }
 # =====================================================
 # FINAL RESULT
 # =====================================================
