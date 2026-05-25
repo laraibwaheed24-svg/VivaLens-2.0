@@ -22,51 +22,6 @@ st.set_page_config(
 )
 
 
-# =====================================================
-# ANTI CHEATING ALERT SYSTEM
-# =====================================================
-
-if st.session_state.mode == "University Final Exam":
-
-    st.markdown("""
-    <script>
-
-    // TAB SWITCH
-    document.addEventListener("visibilitychange", function() {
-
-        if (document.hidden) {
-
-            alert("⚠️ Warning: Tab Switching Detected");
-
-        }
-
-    });
-
-    // COPY
-    document.addEventListener("copy", function() {
-
-        alert("⚠️ Copying is not allowed");
-
-    });
-
-    // PASTE
-    document.addEventListener("paste", function() {
-
-        alert("⚠️ Pasting is not allowed");
-
-    });
-
-    // RIGHT CLICK
-    document.addEventListener("contextmenu", function(e) {
-
-        e.preventDefault();
-
-        alert("⚠️ Right Click Disabled");
-
-    });
-
-    </script>
-    """, unsafe_allow_html=True)
 
 # =====================================================
 # STYLING
@@ -148,6 +103,53 @@ for k, v in defaults.items():
     if k not in st.session_state:
         st.session_state[k] = v
 
+
+
+# =====================================================
+# ANTI CHEATING ALERT SYSTEM
+# =====================================================
+
+if st.session_state.mode == "University Final Exam":
+
+    st.markdown("""
+    <script>
+
+    // TAB SWITCH
+    document.addEventListener("visibilitychange", function() {
+
+        if (document.hidden) {
+
+            alert("⚠️ Warning: Tab Switching Detected");
+
+        }
+
+    });
+
+    // COPY
+    document.addEventListener("copy", function() {
+
+        alert("⚠️ Copying is not allowed");
+
+    });
+
+    // PASTE
+    document.addEventListener("paste", function() {
+
+        alert("⚠️ Pasting is not allowed");
+
+    });
+
+    // RIGHT CLICK
+    document.addEventListener("contextmenu", function(e) {
+
+        e.preventDefault();
+
+        alert("⚠️ Right Click Disabled");
+
+    });
+
+    </script>
+    """, unsafe_allow_html=True)
 
 
 # =====================================================
