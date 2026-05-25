@@ -682,8 +682,8 @@ VIVA:
 
 REQUIRED:
 - Overall Score /100
-- Technical Skills
-- Communication
+- Technical Skills /10
+- Communication /10
 - Strengths
 - Weaknesses
 - Final Verdict
