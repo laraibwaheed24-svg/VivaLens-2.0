@@ -726,8 +726,6 @@ st.markdown("### AI Viva + Thesis Defense System")
 
 st.sidebar.title("⚙️ VivaLens Settings")
 
-if st.session_state.mode == "University Final Exam":
-    st.sidebar.error(f"⚠️ Warnings: {st.session_state.warnings}/3")
 
 mode_toggle = st.sidebar.toggle("🏛 University Final Exam Mode")
 
@@ -796,6 +794,10 @@ else:
         "Answer Mode",
         ["Voice", "Text"]
     )
+
+
+if st.session_state.mode == "University Final Exam":
+    st.sidebar.error(f"⚠️ Warnings: {st.session_state.warnings}/3")
     
 
 # =====================================================
