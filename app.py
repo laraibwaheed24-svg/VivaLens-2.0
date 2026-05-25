@@ -1,6 +1,6 @@
 
-import streamlit as st
 import streamlit.components.v1 as components
+import streamlit as st
 import requests
 from PyPDF2 import PdfReader
 from docx import Document
