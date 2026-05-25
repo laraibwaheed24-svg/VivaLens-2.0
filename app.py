@@ -105,6 +105,16 @@ for k, v in defaults.items():
         st.session_state[k] = v
 
 
+st.markdown("""
+<style>
+
+div[data-testid="stTextInput"]:has(input[aria-label="warning_sync"]) {
+    display: none;
+}
+
+</style>
+""", unsafe_allow_html=True)
+
 warning_sync = st.text_input(
     "warning_sync",
     value="0",
@@ -115,6 +125,10 @@ try:
     st.session_state.warnings = int(warning_sync)
 except:
     pass
+
+
+if st.session_state.mode == "University Final Exam":
+    st.sidebar.error(f"⚠️ Warnings: {st.session_state.warnings}/3")
 
 
 
