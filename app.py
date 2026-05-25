@@ -69,6 +69,15 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 
+h1, h2, h3 {
+    color: #f9fafb;
+}
+
+.metric-card:hover {
+    transform: translateY(-3px);
+    transition: 0.3s;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+}
 
 
 # =====================================================
@@ -228,6 +237,12 @@ def transcribe_audio(audio_file):
     except Exception as e:
 
         return f"Transcription Error: {str(e)}"
+
+
+def load_data():
+    if os.path.exists("student_results.xlsx"):
+        return pd.read_excel("student_results.xlsx")
+    return pd.DataFrame()
 
 
 # =====================================================
@@ -709,6 +724,11 @@ st.markdown("### AI Viva + Thesis Defense System")
 # =====================================================
 
 st.sidebar.title("⚙️ VivaLens Settings")
+
+admin_view = st.sidebar.selectbox(
+    "Admin Dashboard View",
+    ["Off", "Overview", "Students", "Analytics"]
+)
 
 
 mode_toggle = st.sidebar.toggle("🏛 University Final Exam Mode")
@@ -1223,6 +1243,97 @@ if st.session_state.final_result:
 
         st.rerun()
 
+
+# =====================================================
+# ADMIN DASHBOARD (SAAS UI)
+# =====================================================
+
+if st.session_state.mode == "University Final Exam" and admin_view != "Off":
+
+    df = load_data()
+
+    st.markdown("## 🧑‍💼 Official Admin Panel")
+
+    # ================= OVERVIEW =================
+    if admin_view == "Overview":
+
+        col1, col2, col3, col4 = st.columns(4)
+
+        total = len(df)
+        pass_count = len(df[df["Status"] == "PASS"]) if not df.empty else 0
+        fail_count = len(df[df["Status"] == "FAIL"]) if not df.empty else 0
+        avg = round(df["Marks"].mean(), 2) if not df.empty else 0
+
+        with col1:
+            st.markdown(f"""
+            <div class="metric-card">
+            <h3>🎓 Total Students</h3>
+            <h2>{total}</h2>
+            </div>
+            """, unsafe_allow_html=True)
+
+        with col2:
+            st.markdown(f"""
+            <div class="metric-card">
+            <h3>✅ Passed</h3>
+            <h2>{pass_count}</h2>
+            </div>
+            """, unsafe_allow_html=True)
+
+        with col3:
+            st.markdown(f"""
+            <div class="metric-card">
+            <h3>❌ Failed</h3>
+            <h2>{fail_count}</h2>
+            </div>
+            """, unsafe_allow_html=True)
+
+        with col4:
+            st.markdown(f"""
+            <div class="metric-card">
+            <h3>📊 Avg Score</h3>
+            <h2>{avg}</h2>
+            </div>
+            """, unsafe_allow_html=True)
+
+        st.markdown("---")
+
+        if not df.empty:
+            st.bar_chart(df["Status"].value_counts())
+
+    # ================= STUDENTS =================
+    elif admin_view == "Students":
+
+        st.subheader("📋 Student Records")
+
+        if not df.empty:
+            st.dataframe(df, use_container_width=True)
+
+            search = st.text_input("🔍 Search Student")
+
+            if search:
+                filtered = df[df["Student Name"].str.contains(search, case=False)]
+                st.dataframe(filtered)
+        else:
+            st.info("No student records yet.")
+
+    # ================= ANALYTICS =================
+    elif admin_view == "Analytics":
+
+        st.subheader("📊 Analytics Dashboard")
+
+        if not df.empty:
+
+            col1, col2 = st.columns(2)
+
+            with col1:
+                st.bar_chart(df["Department"].value_counts())
+
+            with col2:
+                st.bar_chart(df["Marks"])
+
+        else:
+            st.info("No data available.")
 
 # =====================================================
 # VIEW SAVED RESULTS
