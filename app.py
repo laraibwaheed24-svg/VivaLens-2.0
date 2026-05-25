@@ -21,6 +21,53 @@ st.set_page_config(
     layout="wide"
 )
 
+
+# =====================================================
+# ANTI CHEATING ALERT SYSTEM
+# =====================================================
+
+if st.session_state.mode == "University Final Exam":
+
+    st.markdown("""
+    <script>
+
+    // TAB SWITCH
+    document.addEventListener("visibilitychange", function() {
+
+        if (document.hidden) {
+
+            alert("⚠️ Warning: Tab Switching Detected");
+
+        }
+
+    });
+
+    // COPY
+    document.addEventListener("copy", function() {
+
+        alert("⚠️ Copying is not allowed");
+
+    });
+
+    // PASTE
+    document.addEventListener("paste", function() {
+
+        alert("⚠️ Pasting is not allowed");
+
+    });
+
+    // RIGHT CLICK
+    document.addEventListener("contextmenu", function(e) {
+
+        e.preventDefault();
+
+        alert("⚠️ Right Click Disabled");
+
+    });
+
+    </script>
+    """, unsafe_allow_html=True)
+
 # =====================================================
 # STYLING
 # =====================================================
@@ -95,80 +142,13 @@ defaults = {
     "final_result": None,
     "voice_answers": {},
     "admin_logged_in": False,
-    "warnings": 0,
-    "exam_terminated": False
+    "warnings": 0
 }
 for k, v in defaults.items():
     if k not in st.session_state:
         st.session_state[k] = v
 
 
-# =====================================================
-# ANTI CHEATING SYSTEM
-# =====================================================
-
-if st.session_state.mode == "University Final Exam":
-
-    cheat_detect = components.html(
-        """
-        <script>
-
-        let warnings = 0;
-
-        function sendWarning(reason) {
-
-            warnings++;
-
-            const message = warnings + "|" + reason;
-
-            window.parent.postMessage({
-                type: "streamlit:setComponentValue",
-                value: message
-            }, "*");
-
-        }
-
-        document.addEventListener("visibilitychange", function() {
-
-            if (document.hidden) {
-                sendWarning("Tab Switching");
-            }
-
-        });
-
-        document.addEventListener("copy", function() {
-            sendWarning("Copy Attempt");
-        });
-
-        document.addEventListener("paste", function() {
-            sendWarning("Paste Attempt");
-        });
-
-        document.addEventListener("contextmenu", function(e) {
-
-            e.preventDefault();
-
-            sendWarning("Right Click");
-
-        });
-
-        </script>
-        """,
-        height=0
-    )
-
-    if cheat_detect:
-
-        try:
-
-            count, reason = cheat_detect.split("|")
-
-            st.session_state.warnings = int(count)
-
-            st.sidebar.warning(f"🚨 {reason} Detected")
-
-        except:
-            pass
 
 # =====================================================
 # FILE READER
