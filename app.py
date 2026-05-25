@@ -1,4 +1,3 @@
-
 import streamlit.components.v1 as components
 import streamlit as st
 import requests
@@ -85,14 +84,6 @@ if not GROQ_API_KEY:
     st.error("Missing GROQ API Key")
     st.stop()
 
-
-EVALUATION_RUBRIC = {
-    "Technical Depth": 30,
-    "Concept Clarity": 25,
-    "Problem Solving": 25,
-    "Communication": 20
-}
-
 # =====================================================
 # SESSION STATE
 # =====================================================
@@ -105,35 +96,11 @@ defaults = {
     "final_result": None,
     "voice_answers": {},
     "admin_logged_in": False,
-    "warnings": 0,
-    "exam_terminated": False
+    "warnings": 0
 }
 for k, v in defaults.items():
     if k not in st.session_state:
         st.session_state[k] = v
-
-
-st.markdown("""
-<style>
-
-div[data-testid="stTextInput"]:has(input[aria-label="warning_sync"]) {
-    display: none;
-}
-
-</style>
-""", unsafe_allow_html=True)
-
-warning_sync = st.text_input(
-    "warning_sync",
-    value="0",
-    label_visibility="collapsed"
-)
-
-try:
-    st.session_state.warnings = int(warning_sync)
-except:
-    pass
-
 
 
 
@@ -141,72 +108,51 @@ except:
 # ANTI CHEATING SYSTEM
 # =====================================================
 
+if st.session_state.mode == "University Final Exam":
+
     components.html(
-        f"""
+        """
         <script>
 
-        let warnings = {st.session_state.warnings};
+        // TAB SWITCH DETECTION
+        document.addEventListener("visibilitychange", function() {
 
-        function updateWarnings(reason) {{
+            if (document.hidden) {
 
-            warnings++;
+                alert("⚠️ Warning: Tab Switching Detected");
 
-            alert("⚠️ " + reason);
+            }
 
-            const input = window.parent.document.querySelector(
-                'input[aria-label="warning_sync"]'
-            );
+        });
 
-            if(input) {{
+        // COPY DETECTION
+        document.addEventListener("copy", function() {
 
-                input.value = warnings;
+            alert("⚠️ Copying is not allowed");
 
-                input.dispatchEvent(
-                    new Event('input', {{ bubbles: true }})
-                );
+        });
 
-            }}
+        // PASTE DETECTION
+        document.addEventListener("paste", function() {
 
-        }}
+            alert("⚠️ Pasting is not allowed");
 
-        // TAB SWITCH
-        document.addEventListener("visibilitychange", function() {{
+        });
 
-            if (document.hidden) {{
-
-                updateWarnings("Tab Switching Detected");
-
-            }}
-
-        }});
-
-        // COPY
-        document.addEventListener("copy", function() {{
-
-            updateWarnings("Copying is not allowed");
-
-        }});
-
-        // PASTE
-        document.addEventListener("paste", function() {{
-
-            updateWarnings("Pasting is not allowed");
-
-        }});
-
-        // RIGHT CLICK
-        document.addEventListener("contextmenu", function(e) {{
+        // RIGHT CLICK BLOCK
+        document.addEventListener("contextmenu", function(e) {
 
             e.preventDefault();
 
-            updateWarnings("Right Click Disabled");
+            alert("⚠️ Right Click Disabled");
 
-        }});
+        });
 
         </script>
         """,
         height=0
     )
+
 
 # =====================================================
 # FILE READER
@@ -659,7 +605,6 @@ Give strict evaluation with score.
     except:
         return "Evaluation failed."
 
-
 # =====================================================
 # FINAL RESULT
 # =====================================================
@@ -682,8 +627,8 @@ VIVA:
 
 REQUIRED:
 - Overall Score /100
-- Technical Skills /10
-- Communication /10
+- Technical Skills
+- Communication
 - Strengths
 - Weaknesses
 - Final Verdict
@@ -843,38 +788,9 @@ if st.session_state.mode == "University Final Exam":
 # AUTO TERMINATION
 # =====================================================
 
-if (
-    st.session_state.mode == "University Final Exam"
-    and st.session_state.warnings >= 3
-):
-
-    st.session_state.exam_terminated = True
+if st.session_state.warnings >= 3:
 
     st.error("❌ Exam Terminated Due To Cheating")
-
-    # AUTO SAVE FAIL RESULT
-
-    terminated_result = """
-FINAL STATUS: FAIL
-
-Reason:
-Exam terminated due to cheating violations.
-
-Warnings exceeded limit.
-"""
-
-    try:
-
-        save_to_excel(
-            name="Terminated Student",
-            roll="N/A",
-            dept="N/A",
-            project_title="N/A",
-            result=terminated_result
-        )
-
-    except:
-        pass
 
     st.stop()
 
@@ -1130,7 +1046,6 @@ def save_to_excel(name, roll, dept, project_title, result):
     # Extract Marks
     # =========================
 
-    
     marks_match = re.search(r'Overall Marks:\s*(\d+\/100)', result)
 
     if marks_match:
@@ -1329,4 +1244,5 @@ if st.session_state.mode == "University Final Exam":
     else:
 
         st.info("No saved records yet.")
+
 
