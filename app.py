@@ -1,5 +1,6 @@
 
 import streamlit as st
+import streamlit.components.v1 as components
 import requests
 from PyPDF2 import PdfReader
 from docx import Document
@@ -95,12 +96,81 @@ defaults = {
     "voice_answers": {},
     "admin_logged_in": False,
     "warnings": 0,
-    "warning_sync": ""
+    "exam_terminated": False
 }
-
 for k, v in defaults.items():
     if k not in st.session_state:
         st.session_state[k] = v
+
+
+# =====================================================
+# ANTI CHEAT SYSTEM
+# =====================================================
+
+if st.session_state.mode == "University Final Exam":
+
+    components.html(
+        """
+        <script>
+
+        let warnings = 0;
+
+        function sendWarning(reason) {
+
+            warnings += 1;
+
+            window.parent.postMessage({
+                type: "streamlit:setComponentValue",
+                value: warnings
+            }, "*");
+
+        }
+
+        // TAB SWITCH DETECTION
+        document.addEventListener("visibilitychange", function() {
+
+            if (document.hidden) {
+                sendWarning("Tab Switched");
+            }
+
+        });
+
+        // COPY / PASTE DETECTION
+        document.addEventListener("copy", function() {
+            sendWarning("Copy Detected");
+        });
+
+        document.addEventListener("paste", function() {
+            sendWarning("Paste Detected");
+        });
+
+        // RIGHT CLICK BLOCK
+        document.addEventListener("contextmenu", function(e) {
+            e.preventDefault();
+            sendWarning("Right Click");
+        });
+
+        </script>
+        """,
+        height=0
+    )
+
+
+
+warning_value = st.text_input(
+    "warning_sync",
+    value="",
+    label_visibility="collapsed"
+)
+
+if warning_value:
+
+    try:
+        st.session_state.warnings = int(warning_value)
+    except:
+        pass
+
+
 
 # =====================================================
 # FILE READER
@@ -658,6 +728,9 @@ st.markdown("### AI Viva + Thesis Defense System")
 
 st.sidebar.title("⚙️ VivaLens Settings")
 
+if st.session_state.mode == "University Final Exam":
+    st.sidebar.error(f"⚠️ Warnings: {st.session_state.warnings}/3")
+
 mode_toggle = st.sidebar.toggle("🏛 University Final Exam Mode")
 
 st.session_state.mode = (
@@ -726,7 +799,19 @@ else:
         ["Voice", "Text"]
     )
     
-    
+# =====================================================
+# AUTO TERMINATE
+# =====================================================
+
+if st.session_state.warnings >= 3:
+
+    st.session_state.exam_terminated = True
+
+if st.session_state.exam_terminated:
+
+    st.error("❌ Exam Terminated Due To Suspicious Activity")
+
+    st.stop()  
 
 # =====================================================
 # FILE UPLOAD
