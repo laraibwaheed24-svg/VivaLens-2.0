@@ -97,11 +97,24 @@ defaults = {
     "final_result": None,
     "voice_answers": {},
     "admin_logged_in": False,
-    "warnings": 0
+    "warnings": 0,
+    "exam_terminated": False
 }
 for k, v in defaults.items():
     if k not in st.session_state:
         st.session_state[k] = v
+
+
+warning_sync = st.text_input(
+    "warning_sync",
+    value="0",
+    label_visibility="collapsed"
+)
+
+try:
+    st.session_state.warnings = int(warning_sync)
+except:
+    pass
 
 
 
@@ -111,49 +124,76 @@ for k, v in defaults.items():
 
 if st.session_state.mode == "University Final Exam":
 
+    st.sidebar.error(
+        f"⚠️ Warnings: {st.session_state.warnings}/3"
+    )
+
     components.html(
-        """
+        f"""
         <script>
 
-        // TAB SWITCH DETECTION
-        document.addEventListener("visibilitychange", function() {
+        let warnings = {st.session_state.warnings};
 
-            if (document.hidden) {
+        function updateWarnings(reason) {{
 
-                alert("⚠️ Warning: Tab Switching Detected");
+            warnings++;
 
-            }
+            alert("⚠️ " + reason);
 
-        });
+            const input = window.parent.document.querySelector(
+                'input[aria-label="warning_sync"]'
+            );
 
-        // COPY DETECTION
-        document.addEventListener("copy", function() {
+            if(input) {{
 
-            alert("⚠️ Copying is not allowed");
+                input.value = warnings;
 
-        });
+                input.dispatchEvent(
+                    new Event('input', {{ bubbles: true }})
+                );
 
-        // PASTE DETECTION
-        document.addEventListener("paste", function() {
+            }}
 
-            alert("⚠️ Pasting is not allowed");
+        }}
 
-        });
+        // TAB SWITCH
+        document.addEventListener("visibilitychange", function() {{
 
-        // RIGHT CLICK BLOCK
-        document.addEventListener("contextmenu", function(e) {
+            if (document.hidden) {{
+
+                updateWarnings("Tab Switching Detected");
+
+            }}
+
+        }});
+
+        // COPY
+        document.addEventListener("copy", function() {{
+
+            updateWarnings("Copying is not allowed");
+
+        }});
+
+        // PASTE
+        document.addEventListener("paste", function() {{
+
+            updateWarnings("Pasting is not allowed");
+
+        }});
+
+        // RIGHT CLICK
+        document.addEventListener("contextmenu", function(e) {{
 
             e.preventDefault();
 
-            alert("⚠️ Right Click Disabled");
+            updateWarnings("Right Click Disabled");
 
-        });
+        }});
 
         </script>
         """,
         height=0
     )
-
 
 # =====================================================
 # FILE READER
@@ -789,9 +829,38 @@ if st.session_state.mode == "University Final Exam":
 # AUTO TERMINATION
 # =====================================================
 
-if st.session_state.warnings >= 3:
+if (
+    st.session_state.mode == "University Final Exam"
+    and st.session_state.warnings >= 3
+):
+
+    st.session_state.exam_terminated = True
 
     st.error("❌ Exam Terminated Due To Cheating")
+
+    # AUTO SAVE FAIL RESULT
+
+    terminated_result = """
+FINAL STATUS: FAIL
+
+Reason:
+Exam terminated due to cheating violations.
+
+Warnings exceeded limit.
+"""
+
+    try:
+
+        save_to_excel(
+            name="Terminated Student",
+            roll="N/A",
+            dept="N/A",
+            project_title="N/A",
+            result=terminated_result
+        )
+
+    except:
+        pass
 
     st.stop()
 
