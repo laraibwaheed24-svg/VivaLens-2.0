@@ -106,50 +106,53 @@ for k, v in defaults.items():
 
 
 # =====================================================
-# ANTI CHEATING ALERT SYSTEM
+# ANTI CHEATING SYSTEM
 # =====================================================
 
 if st.session_state.mode == "University Final Exam":
 
-    st.markdown("""
-    <script>
+    components.html(
+        """
+        <script>
 
-    // TAB SWITCH
-    document.addEventListener("visibilitychange", function() {
+        // TAB SWITCH DETECTION
+        document.addEventListener("visibilitychange", function() {
 
-        if (document.hidden) {
+            if (document.hidden) {
 
-            alert("⚠️ Warning: Tab Switching Detected");
+                alert("⚠️ Warning: Tab Switching Detected");
 
-        }
+            }
 
-    });
+        });
 
-    // COPY
-    document.addEventListener("copy", function() {
+        // COPY DETECTION
+        document.addEventListener("copy", function() {
 
-        alert("⚠️ Copying is not allowed");
+            alert("⚠️ Copying is not allowed");
 
-    });
+        });
 
-    // PASTE
-    document.addEventListener("paste", function() {
+        // PASTE DETECTION
+        document.addEventListener("paste", function() {
 
-        alert("⚠️ Pasting is not allowed");
+            alert("⚠️ Pasting is not allowed");
 
-    });
+        });
 
-    // RIGHT CLICK
-    document.addEventListener("contextmenu", function(e) {
+        // RIGHT CLICK BLOCK
+        document.addEventListener("contextmenu", function(e) {
 
-        e.preventDefault();
+            e.preventDefault();
 
-        alert("⚠️ Right Click Disabled");
+            alert("⚠️ Right Click Disabled");
 
-    });
+        });
 
-    </script>
-    """, unsafe_allow_html=True)
+        </script>
+        """,
+        height=0
+    )
 
 
 # =====================================================
