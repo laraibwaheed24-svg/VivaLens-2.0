@@ -28,18 +28,6 @@ st.set_page_config(
 
 st.markdown("""
 <style>
-
-h1, h2, h3 {
-    color: #f9fafb;
-}
-
-.metric-card:hover {
-    transform: translateY(-3px);
-    transition: 0.3s;
-    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-}
-
-
 .block-container {
     padding-top: 2rem;
     padding-bottom: 2rem;
@@ -51,6 +39,16 @@ h1, h2, h3 {
     height: 52px;
     font-size: 17px;
     font-weight: 600;
+}
+
+h1, h2, h3 {
+    color: #f9fafb;
+}
+
+.metric-card:hover {
+    transform: translateY(-3px);
+    transition: 0.3s;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
 }
 
 .stTextArea textarea {
