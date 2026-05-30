@@ -815,15 +815,15 @@ st.success("🔐 Examiner Authenticated")
     # =========================
     # STUDENT INFO SECTION
     # =========================
-    name = st.text_input("Student Name")
-    roll = st.text_input("Roll Number")
-    dept = st.text_input("Department")
-    project_title = st.text_input("Project Title")
+name = st.text_input("Student Name")
+roll = st.text_input("Roll Number")
+dept = st.text_input("Department")
+project_title = st.text_input("Project Title")
 
-    st.markdown("---")
+st.markdown("---")
 
 
-    st.sidebar.error(f"⚠️ Warnings: {st.session_state.warnings}/3")
+st.sidebar.error(f"⚠️ Warnings: {st.session_state.warnings}/3")
     
 
 # =====================================================
