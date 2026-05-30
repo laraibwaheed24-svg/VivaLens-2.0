@@ -881,10 +881,7 @@ if st.session_state.mode == "University Final Exam":
 
     st.success("🔐 Examiner Authenticated")
 
-    name = st.text_input("Student Name")
-    roll = st.text_input("Roll Number")
-    dept = st.text_input("Department")
-    project_title = st.text_input("Project Title")
+
     
 # =====================================================
 # GENERATE QUESTIONS
