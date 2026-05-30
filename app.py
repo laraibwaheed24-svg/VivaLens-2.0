@@ -879,7 +879,7 @@ if st.session_state.mode == "University Final Exam":
         admin_login()
         st.stop()
 
-    st.success("🔐 Examiner Authenticated")
+   
 
 
     
