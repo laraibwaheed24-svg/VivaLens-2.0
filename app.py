@@ -809,7 +809,7 @@ if not st.session_state.admin_logged_in:
         admin_login()
         st.stop()
 
-  st.success("🔐 Examiner Authenticated")
+st.success("🔐 Examiner Authenticated")
 
     # =========================
     # STUDENT INFO SECTION
