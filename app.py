@@ -797,18 +797,19 @@ else:
 
 
 if st.session_state.mode == "University Final Exam":
-
- admin_view = st.sidebar.selectbox(
+     admin_view = st.sidebar.selectbox(
     "Admin Dashboard View",
     ["Off", "Overview", "Students", "Analytics"]
 )
 
+
+
     # MUST be logged in first
-if not st.session_state.admin_logged_in:
+ if not st.session_state.admin_logged_in:
         admin_login()
         st.stop()
 
-st.success("🔐 Examiner Authenticated")
+ st.success("🔐 Examiner Authenticated")
 
     # =========================
     # STUDENT INFO SECTION
