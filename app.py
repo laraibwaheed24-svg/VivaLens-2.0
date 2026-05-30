@@ -726,13 +726,12 @@ st.markdown("### AI Viva + Thesis Defense System")
 
 st.sidebar.title("⚙️ VivaLens Settings")
 
+mode_toggle = st.sidebar.toggle("🏛 University Final Exam Mode")
+
 admin_view = st.sidebar.selectbox(
     "Admin Dashboard View",
     ["Off", "Overview", "Students", "Analytics"]
 )
-
-
-mode_toggle = st.sidebar.toggle("🏛 University Final Exam Mode")
 
 st.session_state.mode = (
     "University Final Exam"
