@@ -728,10 +728,6 @@ st.sidebar.title("⚙️ VivaLens Settings")
 
 mode_toggle = st.sidebar.toggle("🏛 University Final Exam Mode")
 
-admin_view = st.sidebar.selectbox(
-    "Admin Dashboard View",
-    ["Off", "Overview", "Students", "Analytics"]
-)
 
 st.session_state.mode = (
     "University Final Exam"
@@ -801,6 +797,11 @@ else:
 
 
 if st.session_state.mode == "University Final Exam":
+
+admin_view = st.sidebar.selectbox(
+    "Admin Dashboard View",
+    ["Off", "Overview", "Students", "Analytics"]
+)
 
     # MUST be logged in first
     if not st.session_state.admin_logged_in:
