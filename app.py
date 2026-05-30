@@ -798,7 +798,7 @@ else:
 
 if st.session_state.mode == "University Final Exam":
 
-admin_view = st.sidebar.selectbox(
+ admin_view = st.sidebar.selectbox(
     "Admin Dashboard View",
     ["Off", "Overview", "Students", "Analytics"]
 )
