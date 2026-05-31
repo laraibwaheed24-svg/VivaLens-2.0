@@ -1033,8 +1033,7 @@ if st.session_state.questions:
                            )
 
                            model_answer = generate_correct_answer(
-                               q,
-                               project_text
+                               q
                            )
                            
 
