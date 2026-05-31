@@ -633,20 +633,25 @@ Marks: X/10
 
 def generate_correct_answer(question, project_text):
 
-    prompt = f"""
-Project Content:
-{project_text[:6000]}
+prompt = f"""
+You are an academic viva examiner.
 
-Question:
-{question}
-
-Give a short model answer based ONLY on the project.
+Based ONLY on the uploaded project content below, provide a simple ideal answer.
 
 Rules:
-- Maximum 4-5 lines
-- Simple language
-- Direct answer
-- No bullet points
+- Answer ONLY from the project content.
+- Do not invent technologies.
+- Do not assume architecture.
+- Keep answer short (3-5 lines).
+- Use simple student-friendly language.
+
+PROJECT CONTENT:
+{project_text[:10000]}
+
+QUESTION:
+{question}
+
+IDEAL ANSWER:
 """
 
     try:
