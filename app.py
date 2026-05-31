@@ -797,34 +797,29 @@ else:
 
 
 if st.session_state.mode == "University Final Exam":
+
     admin_view = st.sidebar.selectbox(
-    "Admin Dashboard View",
-    ["Off", "Overview", "Students", "Analytics"]
-)
-
-
-
+        "Admin Dashboard View",
+        ["Off", "Overview", "Students", "Analytics"]
+    )
 
     # MUST be logged in first
-if not st.session_state.admin_logged_in:
+    if not st.session_state.admin_logged_in:
         admin_login()
         st.stop()
 
-st.success("🔐 Examiner Authenticated")
+    st.success("🔐 Examiner Authenticated")
 
-    # =========================
-    # STUDENT INFO SECTION
-    # =========================
-name = st.text_input("Student Name")
-roll = st.text_input("Roll Number")
-dept = st.text_input("Department")
-project_title = st.text_input("Project Title")
+    name = st.text_input("Student Name")
+    roll = st.text_input("Roll Number")
+    dept = st.text_input("Department")
+    project_title = st.text_input("Project Title")
 
-st.markdown("---")
+    st.markdown("---")
 
-
-st.sidebar.error(f"⚠️ Warnings: {st.session_state.warnings}/3")
-    
+    st.sidebar.error(
+        f"⚠️ Warnings: {st.session_state.warnings}/3"
+    )
 
 # =====================================================
 # AUTO TERMINATION
