@@ -621,6 +621,54 @@ Give strict evaluation with score.
     except:
         return "Evaluation failed."
 
+# ==============================
+# Model Answer
+# ==============================
+
+def generate_correct_answer(question):
+
+    prompt = f"""
+You are a university viva examiner.
+
+Question:
+{question}
+
+Give a simple, concise model answer.
+
+Rules:
+- 3 to 5 lines only
+- Easy student-friendly language
+- No complex terminology
+- Direct answer only
+"""
+
+    try:
+
+        res = requests.post(
+            CHAT_URL,
+            headers={
+                "Authorization": f"Bearer {GROQ_API_KEY}"
+            },
+            json={
+                "model": "llama-3.1-8b-instant",
+                "messages": [
+                    {
+                        "role": "user",
+                        "content": prompt
+                    }
+                ],
+                "temperature": 0.3
+            }
+        )
+
+        return res.json()["choices"][0]["message"]["content"]
+
+    except:
+        return "Unable to generate answer."
+
+
+
+
 # =====================================================
 # FINAL RESULT
 # =====================================================
