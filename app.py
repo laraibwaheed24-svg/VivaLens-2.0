@@ -904,6 +904,7 @@ if st.button("🚀 Generate Viva Questions"):
     if uploaded_file:
 
         text = extract_text(uploaded_file)
+        st.session_state.project_text = text
 
         with st.spinner("Generating AI Questions..."):
 
@@ -1035,7 +1036,7 @@ if st.session_state.questions:
 
                            model_answer = generate_correct_answer(
                                q,
-                               project_text
+                               st.session_state.project_text
                            )
                            
 
