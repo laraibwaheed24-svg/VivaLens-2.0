@@ -1020,18 +1020,24 @@ if st.session_state.questions:
 
                     if st.session_state.mode == "Student Practice":
 
-                        with st.spinner("Evaluating Answer..."):
+    with st.spinner("Evaluating Answer..."):
 
-                            evaluation = evaluate_answer(
-                                q,
-                                answer
-                            )
+        evaluation = evaluate_answer(
+            q,
+            answer
+        )
 
-                        st.success(evaluation)
+        model_answer = generate_correct_answer(
+            q
+        )
 
-                    else:
+    st.success("✅ Evaluation Complete")
 
-                        st.success("Answer Saved ✅")
+    st.markdown("### 📊 Evaluation")
+    st.write(evaluation)
+
+    st.markdown("### 🎯 Suggested Correct Answer")
+    st.info(model_answer)
 
         with col2:
 
