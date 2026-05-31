@@ -633,7 +633,7 @@ Marks: X/10
 
 def generate_correct_answer(question, project_text):
 
-prompt = f"""
+  prompt = f"""
 You are an academic viva examiner.
 
 Based ONLY on the uploaded project content below, provide a simple ideal answer.
