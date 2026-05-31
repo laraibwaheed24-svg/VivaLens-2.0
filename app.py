@@ -106,7 +106,8 @@ defaults = {
     "final_result": None,
     "voice_answers": {},
     "admin_logged_in": False,
-    "warnings": 0
+    "warnings": 0,
+    "project_text": ""
 }
 for k, v in defaults.items():
     if k not in st.session_state:
