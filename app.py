@@ -594,7 +594,11 @@ Question: {q}
 Student Answer:
 {a}
 
-Give strict evaluation with score.
+Evaluate the answer.
+
+Return ONLY in this format:
+
+Marks: X/10
 """
 
     try:
@@ -621,25 +625,27 @@ Give strict evaluation with score.
     except:
         return "Evaluation failed."
 
-# ==============================
-# Model Answer
-# ==============================
 
-def generate_correct_answer(question):
+# =====================================================
+# CORRECT ANSWER GENERATION
+# =====================================================
+
+def generate_correct_answer(question, project_text):
 
     prompt = f"""
-You are a university viva examiner.
+Project Content:
+{project_text[:6000]}
 
 Question:
 {question}
 
-Give a simple, concise model answer.
+Give a short model answer based ONLY on the project.
 
 Rules:
-- 3 to 5 lines only
-- Easy student-friendly language
-- No complex terminology
-- Direct answer only
+- Maximum 4-5 lines
+- Simple language
+- Direct answer
+- No bullet points
 """
 
     try:
@@ -647,7 +653,8 @@ Rules:
         res = requests.post(
             CHAT_URL,
             headers={
-                "Authorization": f"Bearer {GROQ_API_KEY}"
+                "Authorization": f"Bearer {GROQ_API_KEY}",
+                "Content-Type": "application/json"
             },
             json={
                 "model": "llama-3.1-8b-instant",
@@ -657,16 +664,14 @@ Rules:
                         "content": prompt
                     }
                 ],
-                "temperature": 0.3
+                "temperature": 0.2
             }
         )
 
         return res.json()["choices"][0]["message"]["content"]
 
     except:
-        return "Unable to generate answer."
-
-
+        return "Unable to generate model answer."
 
 
 # =====================================================
@@ -1022,21 +1027,23 @@ if st.session_state.questions:
 
                        with st.spinner("Evaluating Answer..."):
 
-                           evaluation = evaluate_answer(
+                           marks = evaluate_answer(
                                q,
                                answer
                            )
 
                            model_answer = generate_correct_answer(
                                q
+                               project_text
                            )
+                           
 
                        st.success("✅ Evaluation Complete")
 
-                       st.markdown("### 📊 Evaluation")
-                       st.write(evaluation)
+                       st.metric("Marks", marks)
 
-                       st.markdown("### 🎯 Suggested Correct Answer")
+                       st.markdown("### 🎯 Correct Answer")
+
                        st.info(model_answer)
 
                    else:
