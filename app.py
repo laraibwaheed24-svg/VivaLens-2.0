@@ -840,21 +840,7 @@ uploaded_file = st.file_uploader(
     type=["pdf", "docx", "txt", "py", "ipynb"]
 )
 
-# =====================================================
-# STUDENT INFO
-# =====================================================
 
-if st.session_state.mode == "University Final Exam":
-
-    if not st.session_state.admin_logged_in:
-
-        admin_login()
-        st.stop()
-
-   
-
-
-    
 # =====================================================
 # GENERATE QUESTIONS
 # =====================================================
