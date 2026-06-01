@@ -651,10 +651,20 @@ PROJECT CONTENT:
 QUESTION:
 {question}
 
+def generate_correct_answer(question, project_text):
+
+    prompt = f"""
+Question:
+{question}
+
+Project Content:
+{project_text[:5000]}
+
+Give a short, simple answer based ONLY on the uploaded project.
 IDEAL ANSWER:
 """
 
- try:
+    try:
 
         res = requests.post(
             CHAT_URL,
@@ -676,10 +686,8 @@ IDEAL ANSWER:
 
         return res.json()["choices"][0]["message"]["content"]
 
- except:
+    except:
         return "Unable to generate model answer."
-
-
 # =====================================================
 # FINAL RESULT
 # =====================================================
