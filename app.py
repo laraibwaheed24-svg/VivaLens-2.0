@@ -274,29 +274,29 @@ def admin_login():
 
         try:
 
-    df = pd.read_excel("examiners.xlsx")
+            df = pd.read_excel("examiners.xlsx")
 
-    examiner = df[
-        (df["Email"] == username) &
-        (df["Password"] == password)
-    ]
+            examiner = df[
+                (df["Email"] == username) &
+                (df["Password"] == password)
+            ]
 
-    if not examiner.empty:
+            if not examiner.empty:
 
-        st.session_state.admin_logged_in = True
-        st.session_state.examiner_name = examiner.iloc[0]["Name"]
-        st.session_state.examiner_email = examiner.iloc[0]["Email"]
+                st.session_state.admin_logged_in = True
+                st.session_state.examiner_name = examiner.iloc[0]["Name"]
+                st.session_state.examiner_email = examiner.iloc[0]["Email"]
 
-        st.success("✅ Authentication Successful")
-        st.rerun()
+                st.success("✅ Authentication Successful")
+                st.rerun()
 
-    else:
+            else:
 
-        st.error("❌ Invalid Credentials")
+                st.error("❌ Invalid Credentials")
 
-except Exception as e:
+        except Exception as e:
 
-    st.error(f"Login Error: {e}")
+            st.error(f"Login Error: {e}")
 
 
 
