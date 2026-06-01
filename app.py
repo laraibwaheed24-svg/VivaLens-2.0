@@ -1358,10 +1358,7 @@ if st.session_state.mode == "University Final Exam" and admin_view != "Off":
                 st.bar_chart(df["Department"].value_counts())
 
             with col2:
-                df["Marks"] = df["Marks"].astype(str).str.extract(r"(\d+)")[0]
-                df["Marks"] = pd.to_numeric(df["Marks"], errors="coerce")
-
-
+                
                 st.bar_chart(df["Marks"])
 
         else:
