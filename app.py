@@ -654,7 +654,7 @@ QUESTION:
 IDEAL ANSWER:
 """
 
-    try:
+try:
 
         res = requests.post(
             CHAT_URL,
