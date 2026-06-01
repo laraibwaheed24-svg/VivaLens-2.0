@@ -633,7 +633,7 @@ Marks: X/10
 
 def generate_correct_answer(question, project_text):
 
-  prompt = f"""
+    prompt = f"""
 You are an academic viva examiner.
 
 Based ONLY on the uploaded project content below, provide a simple ideal answer.
@@ -641,7 +641,6 @@ Based ONLY on the uploaded project content below, provide a simple ideal answer.
 Rules:
 - Answer ONLY from the project content.
 - Do not invent technologies.
-- Do not assume architecture.
 - Keep answer short (3-5 lines).
 - Use simple student-friendly language.
 
@@ -651,16 +650,6 @@ PROJECT CONTENT:
 QUESTION:
 {question}
 
-def generate_correct_answer(question, project_text):
-
-    prompt = f"""
-Question:
-{question}
-
-Project Content:
-{project_text[:5000]}
-
-Give a short, simple answer based ONLY on the uploaded project.
 IDEAL ANSWER:
 """
 
@@ -688,6 +677,7 @@ IDEAL ANSWER:
 
     except:
         return "Unable to generate model answer."
+
 # =====================================================
 # FINAL RESULT
 # =====================================================
