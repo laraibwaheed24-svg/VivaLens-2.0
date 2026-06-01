@@ -654,7 +654,7 @@ QUESTION:
 IDEAL ANSWER:
 """
 
-try:
+ try:
 
         res = requests.post(
             CHAT_URL,
@@ -676,7 +676,7 @@ try:
 
         return res.json()["choices"][0]["message"]["content"]
 
-except:
+ except:
         return "Unable to generate model answer."
 
 
