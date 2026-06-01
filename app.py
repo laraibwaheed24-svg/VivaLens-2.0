@@ -121,16 +121,14 @@ for k, v in defaults.items():
 
 if st.session_state.mode == "University Final Exam":
 
-# =========================
-# WARNING SYSTEM HANDLER
-# =========================
 
-if "warning_trigger" not in st.session_state:
-    st.session_state.warning_trigger = False
 
-if st.session_state.warning_trigger:
-    st.session_state.warnings += 1
-    st.session_state.warning_trigger = False
+    if "warning_trigger" not in st.session_state:
+        st.session_state.warning_trigger = False
+
+    if st.session_state.warning_trigger:
+        st.session_state.warnings += 1
+        st.session_state.warning_trigger = False
     
 
     components.html(
