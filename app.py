@@ -1139,9 +1139,13 @@ def save_to_excel(name, roll, dept, project_title, result):
 
         import re
 
-        marks_match = re.search(r'Overall Marks:\s*(\d+\/100)', result)
-        marks = marks_match.group(1) if marks_match else "N/A"
+        marks_match = re.search(
+            r'(?:Overall Marks|Overall Score|Marks|Score)\s*:?\s*(\d+)',
+            result,
+            re.IGNORECASE
+        )
 
+        total_marks = int(marks_match.group(1)) if marks_match else 0
         status = "PASS" if "PASS" in result.upper() else "FAIL" if "FAIL" in result.upper() else "UNKNOWN"
 
         new_data = pd.DataFrame([{
