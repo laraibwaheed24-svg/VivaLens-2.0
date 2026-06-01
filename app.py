@@ -1149,7 +1149,7 @@ def save_to_excel(name, roll, dept, project_title, result):
             "Roll Number": roll,
             "Department": dept,
             "Project Title": project_title,
-            "Marks": marks,
+            "Marks": f"{total_marks}/100",
             "Status": status,
             "Timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         }])
