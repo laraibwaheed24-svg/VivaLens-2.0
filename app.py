@@ -104,9 +104,12 @@ defaults = {
     "q_index": 0,
     "final_result": None,
     "voice_answers": {},
-    "admin_logged_in": False,
     "warnings": 0,
-    "project_text": ""
+    "project_text": "",
+      # Examiner Login System
+    "examiner_logged_in": False,
+    "examiner_name": "",
+    "examiner_email": ""
 }
 for k, v in defaults.items():
     if k not in st.session_state:
@@ -269,27 +272,31 @@ def admin_login():
 
     if st.button("Login to Final Exam Mode"):
 
-        ADMIN_USER = "Laraib_Waheed"
-        ADMIN_PASS = "vivalens123"
+        try:
 
-        # REMOVE SPACES SAFELY
-        username = username.strip()
-        password = password.strip()
+    df = pd.read_excel("examiners.xlsx")
 
-        if (
-            username == ADMIN_USER
-            and password == ADMIN_PASS
-        ):
+    examiner = df[
+        (df["Email"] == username) &
+        (df["Password"] == password)
+    ]
 
-            st.session_state.admin_logged_in = True
+    if not examiner.empty:
 
-            st.success("✅ Authentication Successful")
+        st.session_state.admin_logged_in = True
+        st.session_state.examiner_name = examiner.iloc[0]["Name"]
+        st.session_state.examiner_email = examiner.iloc[0]["Email"]
 
-            st.rerun()
+        st.success("✅ Authentication Successful")
+        st.rerun()
 
-        else:
+    else:
 
-            st.error("❌ Invalid Credentials")
+        st.error("❌ Invalid Credentials")
+
+except Exception as e:
+
+    st.error(f"Login Error: {e}")
 
 
 
@@ -759,6 +766,12 @@ def create_pdf_report(name, roll, dept, project_title, result):
     pdf.cell(200, 10, f"Roll Number: {roll}", ln=True)
     pdf.cell(200, 10, f"Department: {dept}", ln=True)
     pdf.cell(200, 10, f"Project Title: {project_title}", ln=True)
+    pdf.cell(
+        200,
+        10,
+        f"Examiner: {st.session_state.examiner_name}",
+        ln=True
+    )
 
     pdf.ln(10)
 
@@ -866,6 +879,9 @@ if st.session_state.mode == "University Final Exam":
         st.stop()
 
     st.success("🔐 Examiner Authenticated")
+    st.info(
+        f"👨‍🏫 Welcome Examiner: {st.session_state.examiner_name}"
+    )
 
     name = st.text_input("Student Name")
     roll = st.text_input("Roll Number")
@@ -1149,6 +1165,7 @@ def save_to_excel(name, roll, dept, project_title, result):
         status = "PASS" if total_marks >= 50 else "FAIL"
 
         new_data = pd.DataFrame([{
+            "Examiner Name": st.session_state.examiner_name,
             "Student Name": name,
             "Roll Number": roll,
             "Department": dept,
