@@ -874,8 +874,8 @@ if st.session_state.mode == "University Final Exam":
     )
 
     # MUST be logged in first
-    if not st.session_state.admin_logged_in:
-        admin_login()
+    if not st.session_state.examiner_logged_in:
+        examinern_login()
         st.stop()
 
     st.success("🔐 Examiner Authenticated")
