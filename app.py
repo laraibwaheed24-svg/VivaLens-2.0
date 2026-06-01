@@ -887,6 +887,9 @@ if st.session_state.mode == "University Final Exam":
     st.sidebar.error(
         f"⚠️ Warnings: {st.session_state.warnings}/3"
     )
+    if st.button("Test Warning"):
+    st.session_state.warnings += 1
+    st.rerun()
 
 # =====================================================
 # AUTO TERMINATION
