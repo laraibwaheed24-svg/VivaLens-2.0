@@ -1282,7 +1282,15 @@ if st.session_state.mode == "University Final Exam" and admin_view != "Off":
         total = len(df)
         pass_count = len(df[df["Status"] == "PASS"]) if not df.empty else 0
         fail_count = len(df[df["Status"] == "FAIL"]) if not df.empty else 0
-        avg = round(df["Marks"].mean(), 2) if not df.empty else 0
+        if not df.empty and "Marks" in df.columns:
+
+            df["Marks"] = df["Marks"].astype(str).str.extract(r"(\d+)")[0]
+            df["Marks"] = pd.to_numeric(df["Marks"], errors="coerce")
+
+            avg = round(df["Marks"].mean(), 2)
+
+        else:
+            avg = 0
 
         with col1:
             st.markdown(f"""
@@ -1350,6 +1358,10 @@ if st.session_state.mode == "University Final Exam" and admin_view != "Off":
                 st.bar_chart(df["Department"].value_counts())
 
             with col2:
+                df["Marks"] = df["Marks"].astype(str).str.extract(r"(\d+)")[0]
+                df["Marks"] = pd.to_numeric(df["Marks"], errors="coerce")
+
+
                 st.bar_chart(df["Marks"])
 
         else:
