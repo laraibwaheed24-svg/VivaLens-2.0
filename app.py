@@ -277,15 +277,15 @@ def admin_login():
             df = pd.read_excel("examiners.xlsx")
 
             examiner = df[
-                (df["Email"] == username) &
+                (df["Username"] == username) &
                 (df["Password"] == password)
             ]
 
             if not examiner.empty:
 
-                st.session_state.admin_logged_in = True
-                st.session_state.examiner_name = examiner.iloc[0]["Name"]
-                st.session_state.examiner_email = examiner.iloc[0]["Email"]
+                st.session_state.examiner_logged_in = True
+                st.session_state.examiner_name = examiner.iloc[0]["Username"]
+                
 
                 st.success("✅ Authentication Successful")
                 st.rerun()
