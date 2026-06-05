@@ -275,6 +275,7 @@ def admin_login():
         try:
 
             df = pd.read_excel("examiners.xlsx")
+            st.write(df)
 
             examiner = df[
                 (df["Username"] == username) &
