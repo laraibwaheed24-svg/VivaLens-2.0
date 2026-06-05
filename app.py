@@ -871,7 +871,7 @@ if st.session_state.mode == "University Final Exam":
 
     admin_view = st.sidebar.selectbox(
         "Admin Dashboard View",
-        ["Off", "Overview", "Students", "Analytics", "Examiners"]
+        ["Off", "Overview", "Students", "Analytics"]
     )
 
     # MUST be logged in first
@@ -1282,27 +1282,7 @@ if st.session_state.final_result:
 
         st.rerun()
 
-# ==================
-# Add Examiners
-# ==================
 
-def add_examiner(name, username, password):
-
-    file = "examiners.xlsx"
-
-    new_row = pd.DataFrame([{
-        "Name": name,
-        "Username": username,
-        "Password": password
-    }])
-
-    if os.path.exists(file):
-        old = pd.read_excel(file)
-        new_row = pd.concat([old, new_row], ignore_index=True)
-
-    new_row.to_excel(file, index=False)
-
-    return True
 
 
 # =====================================================
@@ -1407,35 +1387,6 @@ if st.session_state.mode == "University Final Exam" and admin_view != "Off":
         else:
             st.info("No data available.")
 
-
-    elif admin_view == "Examiners":
-
-        st.subheader("👨‍🏫 Examiner Management")
-
-        ex_name = st.text_input("Examiner Name")
-
-        ex_user = st.text_input("Username")
-
-        ex_pass = st.text_input(
-            "Password",
-             type="password"
-        )
-
-        if st.button("➕ Add Examiner"):
-
-            if ex_name and ex_user and ex_pass:
-
-               add_examiner(
-                   ex_name,
-                   ex_user,
-                   ex_pass
-               )
-
-               st.success("Examiner Added Successfully")
-
-        else:
-
-            st.error("Fill all fields")
 
 # =====================================================
 # VIEW SAVED RESULTS
