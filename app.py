@@ -797,8 +797,14 @@ st.markdown("### AI Viva + Thesis Defense System")
 
 st.sidebar.title("⚙️ VivaLens Settings")
 
-mode_toggle = st.sidebar.toggle("🏛 University Final Exam Mode")
+mode_toggle = st.sidebar.toggle("Switch Mode")
 
+if mode_toggle:
+    st.session_state.mode = "University Final Exam"
+    st.sidebar.success("🏛 Final Exam Mode")
+else:
+    st.session_state.mode = "Student Practice"
+    st.sidebar.success("🎓 Student Practice Mode")
 
 st.session_state.mode = (
     "University Final Exam"
@@ -806,14 +812,7 @@ st.session_state.mode = (
     else "Student Practice"
 )
 
-if st.session_state.mode == "Student Practice":
 
-    st.info("🎓 Current Mode: Student Practice")
-
-else:
-
-    st.warning("🏛 Current Mode: University Final Exam")
-    
 
 section = "Technical"
 difficulty = "Medium"
