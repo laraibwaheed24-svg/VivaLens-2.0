@@ -806,6 +806,15 @@ st.session_state.mode = (
     else "Student Practice"
 )
 
+if st.session_state.mode == "Student Practice":
+
+    st.info("🎓 Current Mode: Student Practice")
+
+else:
+
+    st.warning("🏛 Current Mode: University Final Exam")
+    
+
 section = "Technical"
 difficulty = "Medium"
 examiner_mode = "Strict 😐"
