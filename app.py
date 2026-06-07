@@ -789,7 +789,7 @@ def create_pdf_report(name, roll, dept, project_title, result):
 # =====================================================
 
 st.title("🎓 VivaLens ")
-st.markdown("###AI Academic Evaluation Platform")
+st.markdown("### AI Academic Evaluation Platform")
 
 # =====================================================
 # SIDEBAR
