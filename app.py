@@ -15,7 +15,7 @@ import re
 # =====================================================
 
 st.set_page_config(
-    page_title="VivaLens 2.0",
+    page_title="VivaLens",
     page_icon="🎓",
     layout="wide"
 )
@@ -788,8 +788,8 @@ def create_pdf_report(name, roll, dept, project_title, result):
 # HEADER
 # =====================================================
 
-st.title("🎓 VivaLens 2.0")
-st.markdown("### AI Viva + Thesis Defense System")
+st.title("🎓 VivaLens ")
+st.markdown("AI Academic Evaluation Platform")
 
 # =====================================================
 # SIDEBAR
