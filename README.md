@@ -112,10 +112,6 @@ Stores:
 * Department-wise statistics
 * Student marks analytics
 
-#### Examiner Management
-
-* Add new examiners
-* Manage examiner credentials
 
 ### 🛡 Anti-Cheating Features
 
