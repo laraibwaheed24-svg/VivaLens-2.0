@@ -972,10 +972,12 @@ if st.session_state.mode == "Interview":
 # FILE UPLOAD
 # =====================================================
 
-uploaded_file = st.file_uploader(
-    "📄 Upload Project",
-    type=["pdf", "docx", "txt", "py", "ipynb"]
-)
+if st.session_state.mode != "Interview":
+
+    uploaded_file = st.file_uploader(
+        "📄 Upload Project",
+        type=["pdf", "docx", "txt", "py", "ipynb"]
+    )
 
 
 # =====================================================
