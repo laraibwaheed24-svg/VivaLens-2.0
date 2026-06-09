@@ -452,6 +452,92 @@ def generate_questions(project_text, section, difficulty, examiner_mode, system_
 - Deep analytical questioning
 """
 
+# =====================================================
+# INTERVIEW QUESTION GENERATION
+# =====================================================
+
+def generate_interview_questions(
+    resume_text,
+    job_role,
+    interview_type
+):
+
+    prompt = f"""
+You are a professional interviewer.
+
+Candidate Resume:
+{resume_text[:10000]}
+
+Target Role:
+{job_role}
+
+Interview Type:
+{interview_type}
+
+Rules:
+- Generate EXACTLY 6 interview questions.
+- Questions must be based on the candidate's resume.
+- Questions must be relevant to the target role.
+- Avoid generic questions.
+- Ask progressively harder questions.
+- Focus on real-world skills and projects.
+
+Output Format:
+
+Q1: ...
+Q2: ...
+Q3: ...
+Q4: ...
+Q5: ...
+Q6: ...
+"""
+
+    try:
+
+        res = requests.post(
+            CHAT_URL,
+            headers={
+                "Authorization": f"Bearer {GROQ_API_KEY}",
+                "Content-Type": "application/json"
+            },
+            json={
+                "model": "llama-3.1-8b-instant",
+                "messages": [
+                    {
+                        "role": "user",
+                        "content": prompt
+                    }
+                ],
+                "temperature": 0.7
+            }
+        )
+
+        data = res.json()
+
+        raw = data["choices"][0]["message"]["content"]
+
+        questions = []
+
+        for line in raw.split("\n"):
+
+            line = line.strip()
+
+            if line.startswith("Q") and ":" in line:
+
+                q = line.split(":", 1)[1].strip()
+
+                if q:
+                    questions.append(q)
+
+        return questions[:6]
+
+    except Exception as e:
+
+        st.error(f"Interview Generator Error: {e}")
+
+        return []
+
+
     # =========================================
     # FINAL PROMPT
     # =========================================
