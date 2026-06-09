@@ -1058,11 +1058,21 @@ if st.session_state.mode == "Interview":
 # FILE UPLOAD
 # =====================================================
 
+uploaded_file = None
+resume_file = None
+
 if st.session_state.mode != "Interview":
 
     uploaded_file = st.file_uploader(
         "📄 Upload Project",
         type=["pdf", "docx", "txt", "py", "ipynb"]
+    )
+
+elif st.session_state.mode == "Interview":
+
+    resume_file = st.file_uploader(
+        "📄 Upload Resume",
+        type=["pdf", "docx"]
     )
 
 
@@ -1086,6 +1096,19 @@ if st.button("🚀 Generate Viva Questions"):
                 examiner_mode,
                 st.session_state.mode
             )
+
+
+if st.session_state.mode == "Interview":
+
+    if resume_file is None:
+        st.error("Please upload a resume")
+        st.stop()
+
+else:
+
+    if uploaded_file is None:
+        st.error("Please upload a project")
+        st.stop()
 
         st.session_state.answers = []
         st.session_state.q_index = 0
