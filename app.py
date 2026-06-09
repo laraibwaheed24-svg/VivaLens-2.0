@@ -1031,26 +1031,6 @@ if st.session_state.warnings >= 3:
 
     st.stop()
 
-# ======================================
-# Resume upload
-# ======================================
-
-if st.session_state.mode == "Interview":
-
-    st.subheader("💼 AI Interview Simulator")
-
-    candidate_name = st.text_input(
-        "Candidate Name"
-    )
-
-    job_role = st.text_input(
-        "Target Job Role"
-    )
-
-    resume_file = st.file_uploader(
-        "Upload Resume",
-        type=["pdf", "docx"]
-    )
 
 
 
