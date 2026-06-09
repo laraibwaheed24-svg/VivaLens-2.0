@@ -109,7 +109,11 @@ defaults = {
       # Examiner Login System
     "examiner_logged_in": False,
     "examiner_name": "",
-    "examiner_email": ""
+    "examiner_email": "",
+    "resume_text": "",
+    "job_role": "",
+    "interview_type": "Technical",
+    "interview_score": None
 }
 for k, v in defaults.items():
     if k not in st.session_state:
@@ -797,20 +801,29 @@ st.markdown("### Next-Generation Viva Examination System")
 
 st.sidebar.title("⚙️ VivaLens Settings")
 
-mode_toggle = st.sidebar.toggle("Switch Mode")
+app_mode = st.sidebar.radio(
+    "Select Mode",
+    [
+        "🎓 Student Practice",
+        "🏛 University Final Exam",
+        "💼 AI Interview Simulator"
+    ]
+)
 
-if mode_toggle:
-    st.session_state.mode = "University Final Exam"
-    st.sidebar.success("🏛 Final Exam Mode")
-else:
+if app_mode == "🎓 Student Practice":
+
     st.session_state.mode = "Student Practice"
     st.sidebar.success("🎓 Student Practice Mode")
 
-st.session_state.mode = (
-    "University Final Exam"
-    if mode_toggle
-    else "Student Practice"
-)
+elif app_mode == "🏛 University Final Exam":
+
+    st.session_state.mode = "University Final Exam"
+    st.sidebar.success("🏛 University Final Exam Mode")
+
+else:
+
+    st.session_state.mode = "Interview"
+    st.sidebar.success("💼 AI Interview Simulator")
 
 
 
@@ -874,6 +887,24 @@ else:
         ["Voice", "Text"]
     )
 
+elif st.session_state.mode == "Interview":
+
+    interview_type = st.sidebar.selectbox(
+        "Interview Type",
+        [
+            "HR",
+            "Technical",
+            "Behavioral",
+            "System Design",
+            "Mixed"
+        ]
+    )
+
+    answer_mode = st.sidebar.radio(
+        "Answer Mode",
+        ["Voice", "Text"]
+    )
+
 
 if st.session_state.mode == "University Final Exam":
 
@@ -913,6 +944,29 @@ if st.session_state.warnings >= 3:
     st.error("❌ Exam Terminated Due To Cheating")
 
     st.stop()
+
+# ======================================
+# Resume upload
+# ======================================
+
+if st.session_state.mode == "Interview":
+
+    st.subheader("💼 AI Interview Simulator")
+
+    candidate_name = st.text_input(
+        "Candidate Name"
+    )
+
+    job_role = st.text_input(
+        "Target Job Role"
+    )
+
+    resume_file = st.file_uploader(
+        "Upload Resume",
+        type=["pdf", "docx"]
+    )
+
+
 
 # =====================================================
 # FILE UPLOAD
