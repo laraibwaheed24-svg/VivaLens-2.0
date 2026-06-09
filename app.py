@@ -860,7 +860,7 @@ if st.session_state.mode == "Student Practice":
         ["Voice", "Text"]
     )
 
-else:
+elif st.session_state.mode == "University Final Exam":
 
     examiner_mode = st.sidebar.selectbox(
         "Examiner Mode",
