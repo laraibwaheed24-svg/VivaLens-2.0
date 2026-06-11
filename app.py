@@ -797,15 +797,9 @@ st.markdown("### Next-Generation Viva Examination System")
 
 st.sidebar.title("⚙️ VivaLens Settings")
 
-app_mode = st.sidebar.radio(
-    "Select Mode",
-    [
-        "🎓 Student Practice",
-        "🏛 University Final Exam"
-    ]
-)
+mode_toggle = st.sidebar.toggle("Switch Mode")
 
-if app_mode:
+if mode_toggle:
     st.session_state.mode = "University Final Exam"
     st.sidebar.success("🏛 Final Exam Mode")
 else:
@@ -814,7 +808,7 @@ else:
 
 st.session_state.mode = (
     "University Final Exam"
-    if app_mode
+    if mode_toggle
     else "Student Practice"
 )
 
@@ -1422,4 +1416,5 @@ if st.session_state.mode == "University Final Exam":
     else:
 
         st.info("No saved records yet.")
+
 
