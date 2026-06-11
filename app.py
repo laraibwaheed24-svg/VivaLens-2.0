@@ -797,9 +797,15 @@ st.markdown("### Next-Generation Viva Examination System")
 
 st.sidebar.title("⚙️ VivaLens Settings")
 
-mode_toggle = st.sidebar.toggle("Switch Mode")
+app_mode = st.sidebar.radio(
+    "Select Mode",
+    [
+        "🎓 Student Practice",
+        "🏛 University Final Exam"
+    ]
+)
 
-if mode_toggle:
+if app_mode:
     st.session_state.mode = "University Final Exam"
     st.sidebar.success("🏛 Final Exam Mode")
 else:
