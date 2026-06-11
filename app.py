@@ -109,11 +109,7 @@ defaults = {
       # Examiner Login System
     "examiner_logged_in": False,
     "examiner_name": "",
-    "examiner_email": "",
-    "resume_text": "",
-    "job_role": "",
-    "interview_type": "Technical",
-    "interview_score": None
+    "examiner_email": ""
 }
 for k, v in defaults.items():
     if k not in st.session_state:
@@ -451,92 +447,6 @@ def generate_questions(project_text, section, difficulty, examiner_mode, system_
 - Extremely strict evaluation style
 - Deep analytical questioning
 """
-
-# =====================================================
-# INTERVIEW QUESTION GENERATION
-# =====================================================
-
-def generate_interview_questions(
-    resume_text,
-    job_role,
-    interview_type
-):
-
-    prompt = f"""
-You are a professional interviewer.
-
-Candidate Resume:
-{resume_text[:10000]}
-
-Target Role:
-{job_role}
-
-Interview Type:
-{interview_type}
-
-Rules:
-- Generate EXACTLY 6 interview questions.
-- Questions must be based on the candidate's resume.
-- Questions must be relevant to the target role.
-- Avoid generic questions.
-- Ask progressively harder questions.
-- Focus on real-world skills and projects.
-
-Output Format:
-
-Q1: ...
-Q2: ...
-Q3: ...
-Q4: ...
-Q5: ...
-Q6: ...
-"""
-
-    try:
-
-        res = requests.post(
-            CHAT_URL,
-            headers={
-                "Authorization": f"Bearer {GROQ_API_KEY}",
-                "Content-Type": "application/json"
-            },
-            json={
-                "model": "llama-3.1-8b-instant",
-                "messages": [
-                    {
-                        "role": "user",
-                        "content": prompt
-                    }
-                ],
-                "temperature": 0.7
-            }
-        )
-
-        data = res.json()
-
-        raw = data["choices"][0]["message"]["content"]
-
-        questions = []
-
-        for line in raw.split("\n"):
-
-            line = line.strip()
-
-            if line.startswith("Q") and ":" in line:
-
-                q = line.split(":", 1)[1].strip()
-
-                if q:
-                    questions.append(q)
-
-        return questions[:6]
-
-    except Exception as e:
-
-        st.error(f"Interview Generator Error: {e}")
-
-        return []
-
 
     # =========================================
     # FINAL PROMPT
@@ -887,29 +797,20 @@ st.markdown("### Next-Generation Viva Examination System")
 
 st.sidebar.title("⚙️ VivaLens Settings")
 
-app_mode = st.sidebar.radio(
-    "Select Mode",
-    [
-        "🎓 Student Practice",
-        "🏛 University Final Exam",
-        "💼 AI Interview Simulator"
-    ]
-)
+mode_toggle = st.sidebar.toggle("Switch Mode")
 
-if app_mode == "🎓 Student Practice":
-
+if mode_toggle:
+    st.session_state.mode = "University Final Exam"
+    st.sidebar.success("🏛 Final Exam Mode")
+else:
     st.session_state.mode = "Student Practice"
     st.sidebar.success("🎓 Student Practice Mode")
 
-elif app_mode == "🏛 University Final Exam":
-
-    st.session_state.mode = "University Final Exam"
-    st.sidebar.success("🏛 University Final Exam Mode")
-
-else:
-
-    st.session_state.mode = "Interview"
-    st.sidebar.success("💼 AI Interview Simulator")
+st.session_state.mode = (
+    "University Final Exam"
+    if mode_toggle
+    else "Student Practice"
+)
 
 
 
@@ -946,7 +847,7 @@ if st.session_state.mode == "Student Practice":
         ["Voice", "Text"]
     )
 
-elif st.session_state.mode == "University Final Exam":
+else:
 
     examiner_mode = st.sidebar.selectbox(
         "Examiner Mode",
@@ -965,24 +866,6 @@ elif st.session_state.mode == "University Final Exam":
             "Technical Depth",
             "Presentation",
             "Defense"
-        ]
-    )
-
-    answer_mode = st.sidebar.radio(
-        "Answer Mode",
-        ["Voice", "Text"]
-    )
-
-elif st.session_state.mode == "Interview":
-
-    interview_type = st.sidebar.selectbox(
-        "Interview Type",
-        [
-            "HR",
-            "Technical",
-            "Behavioral",
-            "System Design",
-            "Mixed"
         ]
     )
 
@@ -1031,34 +914,14 @@ if st.session_state.warnings >= 3:
 
     st.stop()
 
-
-
-
 # =====================================================
 # FILE UPLOAD
 # =====================================================
 
-uploaded_file = None
-resume_file = None
-
-if st.session_state.mode == "Interview":
-
-    job_role = st.text_input(
-        "Target Job Role",
-        value="Software Engineer"
-    )
-
-    resume_file = st.file_uploader(
-        "📄 Upload Resume",
-        type=["pdf", "docx"]
-    )
-
-else:
-
-    uploaded_file = st.file_uploader(
-        "📄 Upload Project",
-        type=["pdf", "docx", "txt", "py", "ipynb"]
-    )
+uploaded_file = st.file_uploader(
+    "📄 Upload Project",
+    type=["pdf", "docx", "txt", "py", "ipynb"]
+)
 
 
 # =====================================================
@@ -1067,50 +930,27 @@ else:
 
 if st.button("🚀 Generate Viva Questions"):
 
-    # INTERVIEW MODE
-    if st.session_state.mode == "Interview":
+    if uploaded_file:
 
-        if resume_file is not None:
+        text = extract_text(uploaded_file)
+        st.session_state.project_text = text
 
-            resume_text = extract_text(resume_file)
+        with st.spinner("Generating AI Questions..."):
 
-            with st.spinner("Generating Interview Questions..."):
+            st.session_state.questions = generate_questions(
+                text,
+                section,
+                difficulty,
+                examiner_mode,
+                st.session_state.mode
+            )
 
-                st.session_state.questions = generate_interview_questions(
-                    resume_text,
-                    job_role,
-                    interview_type
-                )
+        st.session_state.answers = []
+        st.session_state.q_index = 0
+        st.session_state.voice_answers = {}
+        st.session_state.final_result = None
 
-            st.session_state.answers = []
-            st.session_state.q_index = 0
-
-            st.success("Interview Questions Generated ✅")
-
-    # STUDENT / FINAL EXAM
-    else:
-
-        if uploaded_file is not None:
-
-            text = extract_text(uploaded_file)
-
-            st.session_state.project_text = text
-
-            with st.spinner("Generating Viva Questions..."):
-
-                st.session_state.questions = generate_questions(
-                    text,
-                    section,
-                    difficulty,
-                    examiner_mode,
-                    st.session_state.mode
-                )
-
-            st.session_state.answers = []
-            st.session_state.q_index = 0
-
-            st.success("Questions Generated Successfully ✅")
-            
+        st.success("Questions Generated Successfully ✅")
 
 
 # =====================================================
@@ -1576,5 +1416,4 @@ if st.session_state.mode == "University Final Exam":
     else:
 
         st.info("No saved records yet.")
-
 
