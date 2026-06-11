@@ -814,7 +814,7 @@ else:
 
 st.session_state.mode = (
     "University Final Exam"
-    if mode_toggle
+    if app_mode
     else "Student Practice"
 )
 
