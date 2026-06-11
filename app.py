@@ -1043,6 +1043,11 @@ resume_file = None
 
 if st.session_state.mode == "Interview":
 
+    job_role = st.text_input(
+        "Target Job Role",
+        value="Software Engineer"
+    )
+
     resume_file = st.file_uploader(
         "📄 Upload Resume",
         type=["pdf", "docx"]
@@ -1062,40 +1067,50 @@ else:
 
 if st.button("🚀 Generate Viva Questions"):
 
-    if uploaded_file:
+    # INTERVIEW MODE
+    if st.session_state.mode == "Interview":
 
-        text = extract_text(uploaded_file)
-        st.session_state.project_text = text
+        if resume_file is not None:
 
-        with st.spinner("Generating AI Questions..."):
+            resume_text = extract_text(resume_file)
 
-            st.session_state.questions = generate_questions(
-                text,
-                section,
-                difficulty,
-                examiner_mode,
-                st.session_state.mode
-            )
+            with st.spinner("Generating Interview Questions..."):
 
+                st.session_state.questions = generate_interview_questions(
+                    resume_text,
+                    job_role,
+                    interview_type
+                )
 
-if st.session_state.mode == "Interview":
+            st.session_state.answers = []
+            st.session_state.q_index = 0
 
-    if resume_file is None:
-        st.error("Please upload a resume")
-        st.stop()
+            st.success("Interview Questions Generated ✅")
 
-else:
+    # STUDENT / FINAL EXAM
+    else:
 
-    if uploaded_file is None:
-        st.error("Please upload a project")
-        st.stop()
+        if uploaded_file is not None:
 
-        st.session_state.answers = []
-        st.session_state.q_index = 0
-        st.session_state.voice_answers = {}
-        st.session_state.final_result = None
+            text = extract_text(uploaded_file)
 
-        st.success("Questions Generated Successfully ✅")
+            st.session_state.project_text = text
+
+            with st.spinner("Generating Viva Questions..."):
+
+                st.session_state.questions = generate_questions(
+                    text,
+                    section,
+                    difficulty,
+                    examiner_mode,
+                    st.session_state.mode
+                )
+
+            st.session_state.answers = []
+            st.session_state.q_index = 0
+
+            st.success("Questions Generated Successfully ✅")
+            
 
 
 # =====================================================
